@@ -3,7 +3,6 @@ package database
 import (
 	"database/sql"
 	"log"
-	"os"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -16,12 +15,10 @@ type Database struct {
 	*sql.DB
 }
 
-// TODO: Should this return a pointer to a Database, or just a Database?
 func NewDatabase() *Database {
 	conn, err := sql.Open("sqlite3", "./app-db.db")
 	if err != nil {
-		log.Printf("ERROR: Failed to connect to database. Aborting...\n")
-		os.Exit(1)
+		log.Fatalf("error: failed to connect to database: %v", err)
 	}
 
 	return &Database{conn}
