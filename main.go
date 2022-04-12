@@ -16,9 +16,8 @@ func main() {
 	router := initRouter()
 
 	db := database.NewDatabase()
+	defer db.Connection.Close()
 
 	fmt.Printf("Server started on PORT %v...\n", PORT)
-	http.ListenAndServe(PORT, &router)
-
-	defer db.Connection.Close()
+	http.ListenAndServe(PORT, router)
 }
