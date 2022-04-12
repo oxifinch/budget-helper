@@ -20,6 +20,6 @@ func initRouter() *http.ServeMux {
 
 	router.HandleFunc("/", routeHome)
 
-	fmt.Printf("Registered routes...\n")
+	log.Printf("Registered routes...\n")
 	return router
 }

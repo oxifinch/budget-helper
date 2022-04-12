@@ -2,7 +2,7 @@ package main
 
 import (
 	"budget-helper/database"
-	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -16,8 +16,8 @@ func main() {
 	router := initRouter()
 
 	db := database.NewDatabase()
-	defer db.Connection.Close()
+	defer db.Close()
 
-	fmt.Printf("Server started on PORT %v...\n", PORT)
+	log.Printf("Server started on PORT %v...\n", PORT)
 	http.ListenAndServe(PORT, router)
 }

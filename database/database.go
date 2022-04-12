@@ -2,7 +2,7 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
+	"log"
 	"os"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -13,16 +13,16 @@ import (
 // TODO: This Database should be a wrapper around SQLBoiler, not just a regular
 // SQL database connection thingy.
 type Database struct {
-	Connection sql.DB
+	*sql.DB
 }
 
 // TODO: Should this return a pointer to a Database, or just a Database?
 func NewDatabase() *Database {
 	conn, err := sql.Open("sqlite3", "./app-db.db")
 	if err != nil {
-		fmt.Printf("ERROR: Failed to connect to database. Aborting...\n")
+		log.Printf("ERROR: Failed to connect to database. Aborting...\n")
 		os.Exit(1)
 	}
 
-	return &Database{*conn}
+	return &Database{conn}
 }
