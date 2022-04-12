@@ -15,5 +15,5 @@ func main() {
 	router := initRouter()
 
 	fmt.Printf("Server started on PORT %v...\n", PORT)
-	http.ListenAndServe(PORT, &router)
+	http.ListenAndServe(PORT, router)
 }
