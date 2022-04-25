@@ -23,7 +23,7 @@ func (u *UserRepo) GetUser(id int) (*models.User, error) {
 	return res, err
 }
 
-func (u *UserRepo) GetAllUsers() ([]*models.User, error) {
+func (u *UserRepo) GetAllUsers() (models.UserSlice, error) {
 	res, err := models.Users().All(u.ctx, u.db)
 
 	return res, err

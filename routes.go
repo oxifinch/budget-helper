@@ -11,20 +11,20 @@ import (
 func handleHome(db *database.Database, w http.ResponseWriter, r *http.Request) {
 	_, err := fmt.Fprint(w, "Welcome to Budget Helper!\n")
 	if err != nil {
-		log.Fatalf("ERROR: %v\n", err)
+		log.Fatalf("handleHome: %v\n", err)
 	}
 }
 
 func handleUsers(db *database.Database, w http.ResponseWriter, r *http.Request) {
 	_, err := fmt.Fprint(w, "Fetching users...\n")
 	if err != nil {
-		log.Fatalf("ERROR: %v\n", err)
+		log.Fatalf("handleUsers: %v\n", err)
 	}
 
 	repo := users.NewUserRepo(db)
 	userList, err := repo.GetAllUsers()
 	if err != nil {
-		log.Fatalf("ERROR: %v\n", err)
+		log.Fatalf("GetAllUsers: %v\n", err)
 	}
 
 	for _, user := range userList {
@@ -39,10 +39,9 @@ func wrapWithDB(db *database.Database, f func(*database.Database, http.ResponseW
 }
 
 func initRouter(db *database.Database) *http.ServeMux {
-	// Check database connection before doing anything else
 	err := db.Ping()
 	if err != nil {
-		log.Fatalf("ERROR: %v\n", err)
+		log.Fatalf("initRouter: %v\n", err)
 	}
 	router := http.NewServeMux()
 
