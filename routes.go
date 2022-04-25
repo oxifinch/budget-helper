@@ -11,24 +11,24 @@ import (
 func handleHome(db *database.Database, w http.ResponseWriter, r *http.Request) {
 	_, err := fmt.Fprint(w, "Welcome to Budget Helper!\n")
 	if err != nil {
-		log.Panic(err)
+		log.Fatalf("ERROR: %v\n", err)
 	}
 }
 
 func handleUsers(db *database.Database, w http.ResponseWriter, r *http.Request) {
 	_, err := fmt.Fprint(w, "Fetching users...\n")
 	if err != nil {
-		log.Fatalf("error: %v\n", err)
+		log.Fatalf("ERROR: %v\n", err)
 	}
 
 	repo := users.NewUserRepo(db)
 	userList, err := repo.GetAllUsers()
 	if err != nil {
-		log.Fatalf("error: %v\n", err)
+		log.Fatalf("ERROR: %v\n", err)
 	}
 
 	for _, user := range userList {
-		fmt.Fprintf(w, "- User: %v\n", user)
+		fmt.Fprintf(w, " %v :: %v\n", user.UserID, user.Username)
 	}
 }
 
@@ -42,7 +42,7 @@ func initRouter(db *database.Database) *http.ServeMux {
 	// Check database connection before doing anything else
 	err := db.Ping()
 	if err != nil {
-		log.Fatalf("error: %v\n", err)
+		log.Fatalf("ERROR: %v\n", err)
 	}
 	router := http.NewServeMux()
 

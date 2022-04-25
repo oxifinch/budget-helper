@@ -4,7 +4,8 @@ import (
 	"budget-helper/database"
 	"budget-helper/models"
 	"context"
-	"log"
+
+	. "github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
 type UserRepo struct {
@@ -16,23 +17,14 @@ func NewUserRepo(db *database.Database) *UserRepo {
 	return &UserRepo{db, context.Background()}
 }
 
-func (u *UserRepo) GetAllUsers() ([]*User, error) {
-	res, err := models.Users().All(u.ctx, u.db)
-	if err != nil {
-		log.Fatalf("error: %v\n", err)
-	}
+func (u *UserRepo) GetUser(id int) (*models.User, error) {
+	res, err := models.Users(Where("user_id=?", id)).One(u.ctx, u.db)
 
-	userList := []*User{}
-	for _, val := range res {
-		newUser := NewUser(int(val.UserID), val.Username, val.Password)
-
-		userList = append(userList, newUser)
-	}
-
-	return userList, err
+	return res, err
 }
 
-//func (u *UserRepo) GetUser(id int) (*User, error) {
-//
-//	res, err := models.Users(qm.Where("user_id=?", id)).One(u.ctx, u.db)
-//}
+func (u *UserRepo) GetAllUsers() ([]*models.User, error) {
+	res, err := models.Users().All(u.ctx, u.db)
+
+	return res, err
+}
