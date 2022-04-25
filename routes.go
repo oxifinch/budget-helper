@@ -2,29 +2,34 @@ package main
 
 import (
 	"budget-helper/database"
-	"budget-helper/models"
-	"budget-helper/user"
-	"context"
+	"budget-helper/users"
 	"fmt"
 	"log"
 	"net/http"
 )
 
-func home(db *database.Database, w http.ResponseWriter, r *http.Request) {
+func handleHome(db *database.Database, w http.ResponseWriter, r *http.Request) {
 	_, err := fmt.Fprint(w, "Welcome to Budget Helper!\n")
 	if err != nil {
 		log.Panic(err)
 	}
 }
 
-func users(db *database.Database, w http.ResponseWriter, r *http.Request) {
+func handleUsers(db *database.Database, w http.ResponseWriter, r *http.Request) {
 	_, err := fmt.Fprint(w, "Fetching users...\n")
 	if err != nil {
 		log.Fatalf("error: %v\n", err)
 	}
 
-	repo := user.NewUserRepo(db)
-	repo.GetAllUsers()
+	repo := users.NewUserRepo(db)
+	userList, err := repo.GetAllUsers()
+	if err != nil {
+		log.Fatalf("error: %v\n", err)
+	}
+
+	for _, user := range userList {
+		fmt.Fprintf(w, "- User: %v\n", user)
+	}
 }
 
 func wrapWithDB(db *database.Database, f func(*database.Database, http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
@@ -33,32 +38,17 @@ func wrapWithDB(db *database.Database, f func(*database.Database, http.ResponseW
 	}
 }
 
-func initRouter() *http.ServeMux {
-	// -- INITIALIZE DATABASE AND ROUTES --
-	db := database.NewDatabase()
+func initRouter(db *database.Database) *http.ServeMux {
+	// Check database connection before doing anything else
 	err := db.Ping()
 	if err != nil {
 		log.Fatalf("error: %v\n", err)
 	}
-
-	// TODO: This works, but when I try to do this in the UserRepo, I get
-	// an error saying the DB is closed.
-	users, err := models.Users().All(context.Background(), db)
-	if err != nil {
-		log.Fatalf("error: %v\n", err)
-	}
-
-	for idx, val := range users {
-		fmt.Printf("%v :: %v\n", idx, val)
-	}
-
 	router := http.NewServeMux()
-	// ------------------------------------
 
-	// REGISTER ALL ROUTES HERE
-	router.HandleFunc("/", wrapWithDB(db, home))
-	//router.HandleFunc("/users", wrapWithDB(db, users))
+	// -- REGISTER ALL ROUTES HERE --
+	router.HandleFunc("/", wrapWithDB(db, handleHome))
+	router.HandleFunc("/users", wrapWithDB(db, handleUsers))
 
-	defer db.Close()
 	return router
 }
