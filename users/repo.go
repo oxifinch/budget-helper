@@ -24,11 +24,7 @@ func (u *UserRepo) GetAllUsers() ([]*User, error) {
 
 	userList := []*User{}
 	for _, val := range res {
-		newUser := NewUser()
-
-		newUser.ID = int(val.UserID)
-		newUser.Username = val.Username
-		newUser.Password = val.Password
+		newUser := NewUser(int(val.UserID), val.Username, val.Password)
 
 		userList = append(userList, newUser)
 	}

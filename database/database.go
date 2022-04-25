@@ -19,10 +19,5 @@ func NewDatabase() *Database {
 		log.Fatalf("error: failed to connect to database: %v", err)
 	}
 
-	err = conn.Ping()
-	if err != nil {
-		log.Fatalf("error: database is closed: %v", err)
-	}
-
 	return &Database{conn}
 }
