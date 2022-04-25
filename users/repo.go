@@ -18,13 +18,9 @@ func NewUserRepo(db *database.Database) *UserRepo {
 }
 
 func (u *UserRepo) GetUser(id int) (*models.User, error) {
-	res, err := models.Users(Where("user_id=?", id)).One(u.ctx, u.db)
-
-	return res, err
+	return models.Users(Where("user_id=?", id)).One(u.ctx, u.db)
 }
 
 func (u *UserRepo) GetAllUsers() (models.UserSlice, error) {
-	res, err := models.Users().All(u.ctx, u.db)
-
-	return res, err
+	return models.Users().All(u.ctx, u.db)
 }
