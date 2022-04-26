@@ -9,9 +9,8 @@ import (
 )
 
 type Server struct {
-	UserRepo *users.UserRepo
-	Router   *router.Router
-	Port     string
+	Router *router.Router
+	Port   string
 }
 
 func NewServer(port string, db *database.Database) *Server {
