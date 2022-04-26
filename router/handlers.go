@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func handleHome(db *database.Database, w http.ResponseWriter, r *http.Request) {
+func handleHome(w http.ResponseWriter, r *http.Request) {
 	_, err := fmt.Fprint(w, "Welcome to Budget Helper!\n")
 	if err != nil {
 		log.Fatalf("handleHome: %v\n", err)

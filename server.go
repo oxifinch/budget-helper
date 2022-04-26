@@ -9,20 +9,17 @@ import (
 )
 
 type Server struct {
-	Database *database.Database
-	Router   *router.Router
 	UserRepo *users.UserRepo
+	Router   *router.Router
 	Port     string
 }
 
-func NewServer(port string) *Server {
-	db := database.NewDatabase()
-	router := router.NewRouter(db)
+func NewServer(port string, db *database.Database) *Server {
 	userRepo := users.NewUserRepo(db)
+	router := router.NewRouter(userRepo)
 
 	// TODO: Check that port is a valid numerical string
 	return &Server{
-		Database: db,
 		Router:   router,
 		UserRepo: userRepo,
 		Port:     port,

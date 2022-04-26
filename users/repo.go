@@ -9,8 +9,8 @@ import (
 )
 
 type UserRepo struct {
-	db  *database.Database
-	ctx context.Context
+	DB  *database.Database
+	CTX context.Context
 }
 
 func NewUserRepo(db *database.Database) *UserRepo {
@@ -18,9 +18,9 @@ func NewUserRepo(db *database.Database) *UserRepo {
 }
 
 func (u *UserRepo) GetUser(id int) (*models.User, error) {
-	return models.Users(Where("user_id=?", id)).One(u.ctx, u.db)
+	return models.Users(Where("user_id=?", id)).One(u.CTX, u.DB)
 }
 
 func (u *UserRepo) GetAllUsers() (models.UserSlice, error) {
-	return models.Users().All(u.ctx, u.db)
+	return models.Users().All(u.CTX, u.DB)
 }

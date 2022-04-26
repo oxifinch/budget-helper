@@ -2,7 +2,7 @@ package router
 
 import (
 	"budget-helper/database"
-	"log"
+	"budget-helper/users"
 	"net/http"
 )
 
@@ -10,17 +10,12 @@ type Router struct {
 	Handler *http.ServeMux
 }
 
-func NewRouter(db *database.Database) *Router {
-	err := db.Ping()
-	if err != nil {
-		log.Fatalf("NewRouter: %v\n", err)
-	}
-
+func NewRouter(u *users.UserRepo) *Router {
 	h := http.NewServeMux()
 
 	// -- REGISTER ALL ROUTES HERE --
-	h.HandleFunc("/", wrapWithDB(db, handleHome))
-	h.HandleFunc("/users", wrapWithDB(db, handleUsers))
+	h.HandleFunc("/", handleHome)
+	h.HandleFunc("/users", wrapWithDB(u.DB, handleUsers))
 
 	return &Router{Handler: h}
 }
