@@ -24,7 +24,6 @@ func NewServer(port string, db *database.Database) *Server {
 		Router: router,
 		Port:   port,
 	}
-
 }
 
 func (s *Server) Run() {

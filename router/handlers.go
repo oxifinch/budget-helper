@@ -21,7 +21,7 @@ func (rt *Router) handleUsers(w http.ResponseWriter, r *http.Request) {
 
 	userList, err := rt.UserRepo.GetAllUsers()
 	if err != nil {
-		log.Fatalf("GetAllUsers: %v\n", err)
+		log.Fatalf("handleUsers: %v\n", err)
 	}
 
 	for _, user := range userList {
