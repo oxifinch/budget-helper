@@ -16,13 +16,14 @@ type Server struct {
 
 func NewServer(port string, db *database.Database) *Server {
 	userRepo := users.NewUserRepo(db)
+
 	router := router.NewRouter(userRepo)
+	router.RegisterRoutes()
 
 	// TODO: Check that port is a valid numerical string
 	return &Server{
-		Router:   router,
-		UserRepo: userRepo,
-		Port:     port,
+		Router: router,
+		Port:   port,
 	}
 
 }
