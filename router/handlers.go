@@ -19,12 +19,12 @@ func (rt *Router) handleUsers(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("handleUsers: %v\n", err)
 	}
 
-	_, err = rt.UserRepo.GetAllUsers()
+	userList, err := rt.UserRepo.GetAllUsers()
 	if err != nil {
 		log.Fatalf("GetAllUsers: %v\n", err)
 	}
 
-	//for _, user := range userList {
-	//	fmt.Fprintf(w, " %v :: %v\n", user.UserID, user.Username)
-	//}
+	for _, user := range userList {
+		fmt.Fprintf(w, " %v :: %v\n", user.UserID, user.Username)
+	}
 }

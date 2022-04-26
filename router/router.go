@@ -13,7 +13,10 @@ type Router struct {
 func NewRouter(u *users.UserRepo) *Router {
 	h := http.NewServeMux()
 
-	return &Router{Handler: h}
+	return &Router{
+		Handler:  h,
+		UserRepo: u,
+	}
 }
 
 func (rt *Router) RegisterRoutes() {
