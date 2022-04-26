@@ -1,4 +1,4 @@
-package main
+package router
 
 import (
 	"budget-helper/database"
@@ -30,24 +30,4 @@ func handleUsers(db *database.Database, w http.ResponseWriter, r *http.Request) 
 	for _, user := range userList {
 		fmt.Fprintf(w, " %v :: %v\n", user.UserID, user.Username)
 	}
-}
-
-func wrapWithDB(db *database.Database, f func(*database.Database, http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		f(db, w, r)
-	}
-}
-
-func initRouter(db *database.Database) *http.ServeMux {
-	err := db.Ping()
-	if err != nil {
-		log.Fatalf("initRouter: %v\n", err)
-	}
-	router := http.NewServeMux()
-
-	// -- REGISTER ALL ROUTES HERE --
-	router.HandleFunc("/", wrapWithDB(db, handleHome))
-	router.HandleFunc("/users", wrapWithDB(db, handleUsers))
-
-	return router
 }
