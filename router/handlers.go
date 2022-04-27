@@ -7,54 +7,23 @@ import (
 	"net/http"
 )
 
-type PageSettings struct {
-	PageTitle string
-	filename  string
-	filepath  string
-}
-
-func NewPageSettings(pageTitle string, filename string) *PageSettings {
-	filepath := fmt.Sprintf("./templates/pages/%v", filename)
-
-	return &PageSettings{
-		PageTitle: pageTitle,
-		filename:  filename,
-		filepath:  filepath,
-	}
-}
-
-func CreateTemplate(p *PageSettings) (*template.Template, error) {
-	return template.New(p.filename).ParseFiles(p.filepath)
-}
+var (
+	tmplHome  = template.Must(template.ParseFiles("./templates/pages/home.html"))
+	tmplLogin = template.Must(template.ParseFiles("./templates/pages/login.html"))
+)
 
 func (rt *Router) handleHome(w http.ResponseWriter, r *http.Request) {
-
-	p := NewPageSettings("Home", "home.html")
-
-	t, err := CreateTemplate(p)
-	if err != nil {
-		log.Fatalf("handleHome: %v\n", err)
-	}
-
-	err = t.Execute(w, p)
+	err := tmplHome.Execute(w, nil)
 	if err != nil {
 		log.Fatalf("handleHome: %v\n", err)
 	}
 }
 
 func (rt *Router) handleLogin(w http.ResponseWriter, r *http.Request) {
-	p := NewPageSettings("Sign in", "login.html")
-
-	t, err := CreateTemplate(p)
+	err := tmplLogin.Execute(w, nil)
 	if err != nil {
 		log.Fatalf("handleLogin: %v\n", err)
 	}
-
-	err = t.Execute(w, p)
-	if err != nil {
-		log.Fatalf("handleLogin: %v\n", err)
-	}
-
 }
 
 func (rt *Router) handleUsers(w http.ResponseWriter, r *http.Request) {
