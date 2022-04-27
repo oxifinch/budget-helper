@@ -21,6 +21,6 @@ func (u *UserRepo) GetUser(id int) (*models.User, error) {
 	return models.Users(Where("user_id=?", id)).One(u.ctx, u.db)
 }
 
-func (u *UserRepo) GetAllUsers() (models.UserSlice, error) {
+func (u *UserRepo) GetAll() (models.UserSlice, error) {
 	return models.Users().All(u.ctx, u.db)
 }
