@@ -22,6 +22,5 @@ func NewRouter(u *users.UserRepo) *Router {
 func (rt *Router) RegisterRoutes() {
 	// -- REGISTER ALL ROUTES HERE --
 	rt.Handler.HandleFunc("/", rt.handleHome)
-	rt.Handler.HandleFunc("/users", rt.handleUsers)
 	rt.Handler.HandleFunc("/login", rt.handleLogin)
 }
