@@ -2,12 +2,35 @@ package router
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 )
 
+type PageSettings struct {
+	AppTitle  string
+	PageTitle string
+	filename  string
+}
+
+func (p *PageSettings) GetPagePath() string {
+	return fmt.Sprintf("./templates/pages/%v", p.filename)
+}
+
 func (rt *Router) handleHome(w http.ResponseWriter, r *http.Request) {
-	_, err := fmt.Fprint(w, "Welcome to Budget Helper!\n")
+	data := PageSettings{
+		AppTitle:  "Budget Helper",
+		PageTitle: "Home",
+		filename:  "home.html",
+	}
+
+	path := data.GetPagePath()
+	t, err := template.New(data.filename).ParseFiles(path)
+	if err != nil {
+		log.Fatalf("handleHome: %v\n", err)
+	}
+
+	err = t.Execute(w, data)
 	if err != nil {
 		log.Fatalf("handleHome: %v\n", err)
 	}
