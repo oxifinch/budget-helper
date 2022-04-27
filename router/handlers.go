@@ -19,7 +19,7 @@ func (rt *Router) handleUsers(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("handleUsers: %v\n", err)
 	}
 
-	userList, err := rt.UserRepo.GetAllUsers()
+	userList, err := rt.UserRepo.GetAll()
 	if err != nil {
 		log.Fatalf("handleUsers: %v\n", err)
 	}

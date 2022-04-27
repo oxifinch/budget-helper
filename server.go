@@ -19,7 +19,6 @@ func NewServer(port string, db *database.Database) *Server {
 	router := router.NewRouter(userRepo)
 	router.RegisterRoutes()
 
-	// TODO: Check that port is a valid numerical string
 	return &Server{
 		Router: router,
 		Port:   port,

@@ -24,9 +24,3 @@ func (rt *Router) RegisterRoutes() {
 	rt.Handler.HandleFunc("/", rt.handleHome)
 	rt.Handler.HandleFunc("/users", rt.handleUsers)
 }
-
-//func wrapWithDB(db *database.Database, f func(*database.Database, http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
-//	return func(w http.ResponseWriter, r *http.Request) {
-//		f(db, w, r)
-//	}
-//}
