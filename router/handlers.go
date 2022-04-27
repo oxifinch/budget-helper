@@ -23,34 +23,34 @@ func NewPageSettings(pageTitle string, filename string) *PageSettings {
 	}
 }
 
-func (p *PageSettings) CreateTemplate() (*template.Template, error) {
+func CreateTemplate(p *PageSettings) (*template.Template, error) {
 	return template.New(p.filename).ParseFiles(p.filepath)
 }
 
 func (rt *Router) handleHome(w http.ResponseWriter, r *http.Request) {
 
-	page := NewPageSettings("Home", "home.html")
+	p := NewPageSettings("Home", "home.html")
 
-	t, err := page.CreateTemplate()
+	t, err := CreateTemplate(p)
 	if err != nil {
 		log.Fatalf("handleHome: %v\n", err)
 	}
 
-	err = t.Execute(w, page)
+	err = t.Execute(w, p)
 	if err != nil {
 		log.Fatalf("handleHome: %v\n", err)
 	}
 }
 
 func (rt *Router) handleLogin(w http.ResponseWriter, r *http.Request) {
-	page := NewPageSettings("Sign in", "login.html")
+	p := NewPageSettings("Sign in", "login.html")
 
-	t, err := page.CreateTemplate()
+	t, err := CreateTemplate(p)
 	if err != nil {
 		log.Fatalf("handleLogin: %v\n", err)
 	}
 
-	err = t.Execute(w, page)
+	err = t.Execute(w, p)
 	if err != nil {
 		log.Fatalf("handleLogin: %v\n", err)
 	}
