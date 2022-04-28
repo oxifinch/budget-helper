@@ -1,5 +1,20 @@
+{{define "head"}}
+<!-- 
+    home.html defines its own "head" and "body" sections.
+    These also contain some placeholders for data.
+    
+    Does this data need to be passed in with a different method
+    since this template is "nested", or is it still just the same?
+    It doesn't matter right now anyway because nothing is being sent.
+-->
+<meta charset="utf-8"/>
+<title>Home | {{ .AppTitle }}</title>
+<meta name="description" content="HTML Boilerplate"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+{{end}}
+
 {{define "body"}}
-<h1>Welcome to Budget Helper!</h1>
+<h1>Welcome to {{ .PageTitle }}!</h1>
 <a href="/login">Sign in</a>
 <p>Don't have an account? <a href="/register">Register here</a>.</p>
 {{end}}
