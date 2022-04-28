@@ -7,6 +7,10 @@ import (
 )
 
 var (
+	AppTitle = "Budget Helper"
+)
+
+var (
 	tmplHome  = template.Must(template.ParseFiles("./templates/pages/home.html", "./templates/base.html"))
 	tmplLogin = template.Must(template.ParseFiles("./templates/pages/login.html", "./templates/base.html"))
 )
@@ -16,7 +20,7 @@ func (rt *Router) handleHome(w http.ResponseWriter, r *http.Request) {
 		AppTitle  string
 		PageTitle string
 	}{
-		AppTitle:  "Budget Helper",
+		AppTitle:  AppTitle,
 		PageTitle: "Home",
 	}
 
@@ -27,7 +31,15 @@ func (rt *Router) handleHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) handleLogin(w http.ResponseWriter, r *http.Request) {
-	err := tmplLogin.Execute(w, nil)
+	data := struct {
+		AppTitle  string
+		PageTitle string
+	}{
+		AppTitle:  AppTitle,
+		PageTitle: "Login",
+	}
+
+	err := tmplLogin.ExecuteTemplate(w, "base", data)
 	if err != nil {
 		log.Fatalf("handleLogin: %v\n", err)
 	}
