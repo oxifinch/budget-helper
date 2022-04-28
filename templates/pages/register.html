@@ -1,0 +1,16 @@
+{{define "body"}}
+<h2>Register a new {{ .AppTitle }} account</h2>
+
+<form action="/registerSave" method="POST">
+
+    <!-- TODO: Check that username is available -->
+    <label for="username">Username</label><br>
+    <input type="text" name="username" required><br>
+
+    <!-- TODO: Confirm password -->
+    <label for="password">Password</label><br>
+    <input type="password" name="password" required><br>
+
+    <button type="submit">Submit</button>
+</form>
+{{end}}

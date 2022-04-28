@@ -23,4 +23,8 @@ func (rt *Router) RegisterRoutes() {
 	// -- REGISTER ALL ROUTES HERE --
 	rt.Handler.HandleFunc("/", rt.handleHome)
 	rt.Handler.HandleFunc("/login", rt.handleLogin)
+	rt.Handler.HandleFunc("/loginSave", rt.handleLoginSave)
+	rt.Handler.HandleFunc("/register", rt.handleRegister)
+	rt.Handler.HandleFunc("/registerSave", rt.handleRegisterSave)
+	rt.Handler.HandleFunc("/dashboard", rt.handleDashboard)
 }
