@@ -5,6 +5,7 @@ import (
 	"budget-helper/models"
 	"context"
 
+	"github.com/volatiletech/sqlboiler/v4/boil"
 	. "github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
@@ -17,10 +18,20 @@ func NewUserRepo(db *database.Database) *UserRepo {
 	return &UserRepo{db, context.Background()}
 }
 
-func (u *UserRepo) GetUser(id int) (*models.User, error) {
+func (u *UserRepo) Get(id int) (*models.User, error) {
 	return models.Users(Where("user_id=?", id)).One(u.ctx, u.db)
 }
 
 func (u *UserRepo) GetAll() (models.UserSlice, error) {
 	return models.Users().All(u.ctx, u.db)
+}
+
+func (u *UserRepo) Create(username string, password string) (int64, error) {
+	user := models.User{
+		Username: username,
+		Password: password,
+	}
+
+	err := user.Insert(u.ctx, u.db, boil.Infer())
+	return user.UserID, err
 }

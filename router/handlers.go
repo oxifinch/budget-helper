@@ -27,21 +27,47 @@ func validateMethod(w http.ResponseWriter, r *http.Request, methodName string) {
 	data := struct {
 		AppTitle        string
 		PageTitle       string
-		StatusCode      string
+		StatusCode      int
 		StatusMessage   string
 		DetailedMessage string
 	}{
 		AppTitle:        AppTitle,
 		PageTitle:       "Error: 405",
-		StatusCode:      "405",
+		StatusCode:      http.StatusMethodNotAllowed,
 		StatusMessage:   "Method Not Allowed",
 		DetailedMessage: "The resource you requested does not support the method used. Please try again by submitting a POST request.",
 	}
 
-	w.WriteHeader(405)
+	w.WriteHeader(data.StatusCode)
 	err := tmplError.ExecuteTemplate(w, "base", data)
 	if err != nil {
 		log.Fatalf("validateMethod: %v\n", err)
+	}
+}
+
+func validateUsernameAndPassword(w http.ResponseWriter, username string, password string) {
+	if strings.TrimSpace(username) != "" && strings.TrimSpace(password) != "" {
+		return
+	}
+
+	data := struct {
+		AppTitle        string
+		PageTitle       string
+		StatusCode      int
+		StatusMessage   string
+		DetailedMessage string
+	}{
+		AppTitle:        AppTitle,
+		PageTitle:       "Error: 400",
+		StatusCode:      http.StatusBadRequest,
+		StatusMessage:   "Bad Request",
+		DetailedMessage: "One or more fields was not submitted. Please try again.",
+	}
+
+	w.WriteHeader(data.StatusCode)
+	err := tmplError.ExecuteTemplate(w, "base", data)
+	if err != nil {
+		log.Fatalf("validateUsernameAndPassword: %v\n", err)
 	}
 }
 
@@ -78,10 +104,6 @@ func (rt *Router) handleLogin(w http.ResponseWriter, r *http.Request) {
 func (rt *Router) handleLoginSave(w http.ResponseWriter, r *http.Request) {
 	validateMethod(w, r, "POST")
 
-	//username := strings.TrimSpace(r.PostFormValue("username"))
-	//password := strings.TrimSpace(r.PostFormValue("password"))
-	// TODO: Make sure that these aren't empty strings
-
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 
 }
@@ -103,6 +125,15 @@ func (rt *Router) handleRegister(w http.ResponseWriter, r *http.Request) {
 
 func (rt *Router) handleRegisterSave(w http.ResponseWriter, r *http.Request) {
 	validateMethod(w, r, "POST")
+
+	username := strings.TrimSpace(r.PostFormValue("username"))
+	password := strings.TrimSpace(r.PostFormValue("password"))
+	validateUsernameAndPassword(w, username, password)
+
+	_, err := rt.UserRepo.Create(username, password)
+	if err != nil {
+		log.Fatalf("handleRegisterSave: %v\n", err)
+	}
 
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
