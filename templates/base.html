@@ -1,17 +1,4 @@
 {{define "base"}}
-<!-- 
-    "base" wants to render two things:
-    1. "head"
-    2. "body"
-
-    Depending on which file is passed with this template,
-    "head" and "body" are different things. For example,
-    if tmplHome is used, "head" and "body" is defined
-    in /templates/pages/home.html. 
-
-    But nothing is being sent except a bunch of blank lines. Why?
-    (Try sending output to os.Stdout instead of w to see what I mean)
--->
 <!DOCTYPE html>
 <html>
     <head>{{template "head" .}}</head>
