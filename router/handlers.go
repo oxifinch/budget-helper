@@ -42,18 +42,12 @@ func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, st
 	}
 }
 
-func validateMethod(w http.ResponseWriter, r *http.Request, methodName string) {
-	if r.Method != strings.ToUpper(methodName) {
-		displayErrorPage(w, r, http.StatusMethodNotAllowed, "Method Not Allowed", "The resource you requested does not support the method used.")
-	}
-
+func methodValid(r *http.Request, methodName string) bool {
+	return r.Method == strings.ToUpper(methodName)
 }
 
-func validateUsernameAndPassword(w http.ResponseWriter, r *http.Request, username string, password string) {
-	if strings.TrimSpace(username) == "" || strings.TrimSpace(password) == "" {
-		displayErrorPage(w, r, http.StatusBadRequest, "Bad Request", "One or more fields was not submitted. Please try again.")
-	}
-
+func nameAndPassValid(username string, password string) bool {
+	return strings.TrimSpace(username) != "" && strings.TrimSpace(password) != ""
 }
 
 // -- HOME, ABOUT & MISC PAGES --
@@ -89,11 +83,15 @@ func (rt *Router) handleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) handleLoginSave(w http.ResponseWriter, r *http.Request) {
-	validateMethod(w, r, "POST")
+	if !methodValid(r, "POST") {
+		displayErrorPage(w, r, http.StatusMethodNotAllowed, "Method Not Allowed", "The resource you requested does not support the method used.")
+	}
 
 	username := strings.TrimSpace(r.PostFormValue("username"))
 	password := strings.TrimSpace(r.PostFormValue("password"))
-	validateUsernameAndPassword(w, r, username, password)
+	if !nameAndPassValid(username, password) {
+		displayErrorPage(w, r, http.StatusBadRequest, "Bad Request", "One or more fields was not submitted. Please try again.")
+	}
 
 	_, err := rt.UserRepo.GetByCredentials(username, password)
 	if err != nil {
@@ -120,11 +118,15 @@ func (rt *Router) handleRegister(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) handleRegisterSave(w http.ResponseWriter, r *http.Request) {
-	validateMethod(w, r, "POST")
+	if !methodValid(r, "POST") {
+		displayErrorPage(w, r, http.StatusMethodNotAllowed, "Method Not Allowed", "The resource you requested does not support the method used.")
+	}
 
 	username := strings.TrimSpace(r.PostFormValue("username"))
 	password := strings.TrimSpace(r.PostFormValue("password"))
-	validateUsernameAndPassword(w, r, username, password)
+	if !nameAndPassValid(username, password) {
+		displayErrorPage(w, r, http.StatusBadRequest, "Bad Request", "One or more fields was not submitted. Please try again.")
+	}
 
 	_, err := rt.UserRepo.Create(username, password)
 	if err != nil {
