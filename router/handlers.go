@@ -1,6 +1,7 @@
 package router
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -19,58 +20,43 @@ var (
 	tmplDashboard = template.Must(template.ParseFiles("./templates/pages/dashboard.html", "./templates/base.html"))
 )
 
+func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, statusMessage string, detailedMessage string) {
+	data := struct {
+		AppTitle        string
+		PageTitle       string
+		StatusCode      int
+		StatusMessage   string
+		DetailedMessage string
+	}{
+		AppTitle:        AppTitle,
+		PageTitle:       fmt.Sprint(statusCode),
+		StatusCode:      statusCode,
+		StatusMessage:   statusMessage,
+		DetailedMessage: detailedMessage,
+	}
+
+	w.WriteHeader(statusCode)
+	err := tmplError.ExecuteTemplate(w, "base", data)
+	if err != nil {
+		log.Fatalf("displayErrorPage: %v\n", err)
+	}
+}
+
 func validateMethod(w http.ResponseWriter, r *http.Request, methodName string) {
-	if r.Method == strings.ToUpper(methodName) {
-		return
+	if r.Method != strings.ToUpper(methodName) {
+		displayErrorPage(w, r, http.StatusMethodNotAllowed, "Method Not Allowed", "The resource you requested does not support the method used.")
 	}
 
-	data := struct {
-		AppTitle        string
-		PageTitle       string
-		StatusCode      int
-		StatusMessage   string
-		DetailedMessage string
-	}{
-		AppTitle:        AppTitle,
-		PageTitle:       "Error: 405",
-		StatusCode:      http.StatusMethodNotAllowed,
-		StatusMessage:   "Method Not Allowed",
-		DetailedMessage: "The resource you requested does not support the method used. Please try again by submitting a POST request.",
-	}
-
-	w.WriteHeader(data.StatusCode)
-	err := tmplError.ExecuteTemplate(w, "base", data)
-	if err != nil {
-		log.Fatalf("validateMethod: %v\n", err)
-	}
 }
 
-func validateUsernameAndPassword(w http.ResponseWriter, username string, password string) {
-	if strings.TrimSpace(username) != "" && strings.TrimSpace(password) != "" {
-		return
+func validateUsernameAndPassword(w http.ResponseWriter, r *http.Request, username string, password string) {
+	if strings.TrimSpace(username) == "" || strings.TrimSpace(password) == "" {
+		displayErrorPage(w, r, http.StatusBadRequest, "Bad Request", "One or more fields was not submitted. Please try again.")
 	}
 
-	data := struct {
-		AppTitle        string
-		PageTitle       string
-		StatusCode      int
-		StatusMessage   string
-		DetailedMessage string
-	}{
-		AppTitle:        AppTitle,
-		PageTitle:       "Error: 400",
-		StatusCode:      http.StatusBadRequest,
-		StatusMessage:   "Bad Request",
-		DetailedMessage: "One or more fields was not submitted. Please try again.",
-	}
-
-	w.WriteHeader(data.StatusCode)
-	err := tmplError.ExecuteTemplate(w, "base", data)
-	if err != nil {
-		log.Fatalf("validateUsernameAndPassword: %v\n", err)
-	}
 }
 
+// -- HOME, ABOUT & MISC PAGES --
 func (rt *Router) handleHome(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		AppTitle  string
@@ -86,6 +72,7 @@ func (rt *Router) handleHome(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// -- USERS & AUTHENTICATION --
 func (rt *Router) handleLogin(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		AppTitle  string
@@ -104,8 +91,17 @@ func (rt *Router) handleLogin(w http.ResponseWriter, r *http.Request) {
 func (rt *Router) handleLoginSave(w http.ResponseWriter, r *http.Request) {
 	validateMethod(w, r, "POST")
 
-	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+	username := strings.TrimSpace(r.PostFormValue("username"))
+	password := strings.TrimSpace(r.PostFormValue("password"))
+	validateUsernameAndPassword(w, r, username, password)
 
+	_, err := rt.UserRepo.GetByCredentials(username, password)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusNotFound, "Not Found", "We found no user with the provided credentials in the database. Please check your username and password, and try again.")
+	}
+
+	// TODO: Set session before redirecting
+	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
 
 func (rt *Router) handleRegister(w http.ResponseWriter, r *http.Request) {
@@ -128,7 +124,7 @@ func (rt *Router) handleRegisterSave(w http.ResponseWriter, r *http.Request) {
 
 	username := strings.TrimSpace(r.PostFormValue("username"))
 	password := strings.TrimSpace(r.PostFormValue("password"))
-	validateUsernameAndPassword(w, username, password)
+	validateUsernameAndPassword(w, r, username, password)
 
 	_, err := rt.UserRepo.Create(username, password)
 	if err != nil {
@@ -138,6 +134,7 @@ func (rt *Router) handleRegisterSave(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
 
+// -- DASHBOARD & MAIN APP ROUTES --
 func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		AppTitle  string

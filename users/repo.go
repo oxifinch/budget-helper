@@ -25,6 +25,10 @@ func (u *UserRepo) GetAll() (models.UserSlice, error) {
 	return models.Users().All(u.ctx, u.db)
 }
 
+func (u *UserRepo) GetByCredentials(username string, password string) (*models.User, error) {
+	return models.Users(Where("username = ?", username), And("password = ?", password)).One(u.ctx, u.db)
+}
+
 func (u *UserRepo) Create(username string, password string) (int64, error) {
 	// TODO: Fix SQLBoiler errors! Use this method only temporarily.
 	queryStr := "INSERT INTO user (username, password) VALUES (?, ?)"
