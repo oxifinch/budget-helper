@@ -27,3 +27,33 @@ func NewDatabase() *Database {
 
 	return &Database{db}
 }
+
+func (db *Database) Seed() {
+	// Delete old data first so there are no duplicates.
+	db.Exec("DELETE FROM users")
+	db.Exec("DELETE FROM budgets")
+
+	newUsers := []*User{
+		{Username: "joseph", Password: "secret01"},
+		{Username: "jean-paul", Password: "secret02"},
+		{Username: "bubby", Password: "secret03"},
+	}
+	for _, u := range newUsers {
+		err := db.Create(u).Error
+		if err != nil {
+			log.Fatalf("seed: %v\n", err)
+		}
+	}
+
+	newBudgets := []*Budget{
+		{StartDate: "2022-04-25", EndDate: "2022-05-25", UserID: 1},
+		{StartDate: "2022-03-28", EndDate: "2022-04-24", UserID: 2},
+		{StartDate: "2022-05-10", EndDate: "2022-06-10", UserID: 3},
+	}
+	for _, b := range newBudgets {
+		err := db.Create(b).Error
+		if err != nil {
+			log.Fatalf("seed: %v\n", err)
+		}
+	}
+}

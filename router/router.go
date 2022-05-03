@@ -1,21 +1,24 @@
 package router
 
 import (
+	"budget-helper/budgets"
 	"budget-helper/users"
 	"net/http"
 )
 
 type Router struct {
-	Handler  *http.ServeMux
-	UserRepo *users.UserRepo
+	Handler    *http.ServeMux
+	UserRepo   *users.UserRepo
+	BudgetRepo *budgets.BudgetRepo
 }
 
-func NewRouter(u *users.UserRepo) *Router {
+func NewRouter(u *users.UserRepo, b *budgets.BudgetRepo) *Router {
 	h := http.NewServeMux()
 
 	return &Router{
-		Handler:  h,
-		UserRepo: u,
+		Handler:    h,
+		UserRepo:   u,
+		BudgetRepo: b,
 	}
 }
 
