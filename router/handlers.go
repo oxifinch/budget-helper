@@ -18,8 +18,11 @@ var (
 	tmplLogin     = addTemplate("pages/login.html")
 	tmplRegister  = addTemplate("pages/register.html")
 	tmplDashboard = addTemplate("pages/dashboard.html")
-	GET           = "GET"
-	POST          = "POST"
+)
+
+const (
+	GET  = "GET"
+	POST = "POST"
 )
 
 func addTemplate(path string) *template.Template {
