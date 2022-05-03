@@ -18,6 +18,8 @@ var (
 	tmplLogin     = template.Must(template.ParseFiles("./templates/pages/login.html", "./templates/base.html"))
 	tmplRegister  = template.Must(template.ParseFiles("./templates/pages/register.html", "./templates/base.html"))
 	tmplDashboard = template.Must(template.ParseFiles("./templates/pages/dashboard.html", "./templates/base.html"))
+	GET           = "GET"
+	POST          = "POST"
 )
 
 func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, statusMessage string, detailedMessage string) {
@@ -40,10 +42,6 @@ func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, st
 	if err != nil {
 		log.Fatalf("displayErrorPage: %v\n", err)
 	}
-}
-
-func methodValid(r *http.Request, methodName string) bool {
-	return r.Method == strings.ToUpper(methodName)
 }
 
 func nameAndPassValid(username string, password string) bool {
@@ -83,7 +81,7 @@ func (rt *Router) handleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) handleLoginSave(w http.ResponseWriter, r *http.Request) {
-	if !methodValid(r, "POST") {
+	if r.Method != POST {
 		displayErrorPage(w, r, http.StatusMethodNotAllowed, "Method Not Allowed", "The resource you requested does not support the method used.")
 	}
 
@@ -118,7 +116,7 @@ func (rt *Router) handleRegister(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) handleRegisterSave(w http.ResponseWriter, r *http.Request) {
-	if !methodValid(r, "POST") {
+	if r.Method != POST {
 		displayErrorPage(w, r, http.StatusMethodNotAllowed, "Method Not Allowed", "The resource you requested does not support the method used.")
 	}
 
