@@ -13,14 +13,18 @@ var (
 )
 
 var (
-	tmplHome      = template.Must(template.ParseFiles("./templates/pages/home.html", "./templates/base.html"))
-	tmplError     = template.Must(template.ParseFiles("./templates/pages/error.html", "./templates/base.html"))
-	tmplLogin     = template.Must(template.ParseFiles("./templates/pages/login.html", "./templates/base.html"))
-	tmplRegister  = template.Must(template.ParseFiles("./templates/pages/register.html", "./templates/base.html"))
-	tmplDashboard = template.Must(template.ParseFiles("./templates/pages/dashboard.html", "./templates/base.html"))
+	tmplHome      = addTemplate("pages/home.html")
+	tmplError     = addTemplate("pages/error.html")
+	tmplLogin     = addTemplate("pages/login.html")
+	tmplRegister  = addTemplate("pages/register.html")
+	tmplDashboard = addTemplate("pages/dashboard.html")
 	GET           = "GET"
 	POST          = "POST"
 )
+
+func addTemplate(path string) *template.Template {
+	return template.Must(template.ParseFiles(fmt.Sprintf("./templates/%v", path), "./templates/base.html"))
+}
 
 func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, statusMessage string, detailedMessage string) {
 	data := struct {
