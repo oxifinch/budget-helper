@@ -1,23 +1,29 @@
 package database
 
 import (
-	"database/sql"
 	"log"
 
-	_ "github.com/mattn/go-sqlite3"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 // Database wraps an SQL driver with an open connection that can
 // be passed around to other functions.
 type Database struct {
-	*sql.DB
+	*gorm.DB
 }
 
 func NewDatabase() *Database {
-	conn, err := sql.Open("sqlite3", "./app-db.db")
+	db, err := gorm.Open(sqlite.Open("./app-db.db"), &gorm.Config{})
+	// conn, err := sql.Open("sqlite3", "./app-db.db")
 	if err != nil {
 		log.Fatalf("NewDatabase: failed to connect to database: %v", err)
 	}
 
-	return &Database{conn}
+	err = db.AutoMigrate(&User{}, &Budget{})
+	if err != nil {
+		log.Fatalf("NewDatabase: %v\n", err)
+	}
+
+	return &Database{db}
 }
