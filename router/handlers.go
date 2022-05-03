@@ -145,12 +145,17 @@ func (rt *Router) handleRegisterSave(w http.ResponseWriter, r *http.Request) {
 // -- DASHBOARD & MAIN APP ROUTES --
 func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	data := struct {
-		AppTitle  string
-		PageTitle string
-		Budget    *database.Budget
+		AppTitle        string
+		PageTitle       string
+		Budget          *database.Budget
+		BudgetRemaining float32
+		BufferRemaining float32
+		Categories      []*database.Category
 	}{
-		AppTitle:  AppTitle,
-		PageTitle: "Dashboard",
+		AppTitle:        AppTitle,
+		PageTitle:       "Dashboard",
+		BudgetRemaining: 2568.25,
+		BufferRemaining: 623.91,
 	}
 
 	// TODO: Check for authentication and give user the right dashboard.
@@ -160,6 +165,12 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("handleDashboard: %v\n", err)
 	}
 	data.Budget = b
+
+	cts, err := rt.CategoryRepo.GetAllFromOwnerId(1)
+	if err != nil {
+		log.Fatalf("handleDashboard: %v\n", err)
+	}
+	data.Categories = cts
 
 	err = tmplDashboard.ExecuteTemplate(w, "base", data)
 	if err != nil {

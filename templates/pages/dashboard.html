@@ -3,6 +3,15 @@
 
 <div class="dashboard-summary">
     <p><em>{{ .Budget.StartDate }} - {{ .Budget.EndDate }}</em></p>
+    <h2><strong>Total allocated: {{ .Budget.Allocated }} {{ .Budget.Currency }}</strong></h2>
+    <h3>Remaining budget: {{ .BudgetRemaining }}</h3>
+    <h3>Remaining buffer: {{ .BufferRemaining }}</h3>
+    <hr>
+    <h2>Categories</h2>
+    {{ range .Categories }}
+        <p><strong>{{ .Name }}</strong></p>  
+        <p><em>{{ .Description }}</em></p>
+    {{end}}
 </div>
 
 {{end}}
