@@ -166,7 +166,7 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	}
 	data.Budget = b
 
-	cts, err := rt.CategoryRepo.GetAllFromOwnerId(1)
+	cts, err := rt.CategoryRepo.GetAllWithOwnerId(1)
 	if err != nil {
 		log.Fatalf("handleDashboard: %v\n", err)
 	}

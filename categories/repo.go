@@ -17,7 +17,7 @@ func (c *CategoryRepo) Get(id int) (*database.Category, error) {
 	return &category, err
 }
 
-func (c *CategoryRepo) GetAllFromOwnerId(id int) ([]*database.Category, error) {
+func (c *CategoryRepo) GetAllWithOwnerId(id int) ([]*database.Category, error) {
 	categories := []*database.Category{}
 	err := c.db.Where("user_id = ?", id).Find(&categories).Error
 
