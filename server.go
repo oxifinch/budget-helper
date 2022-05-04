@@ -1,6 +1,8 @@
 package main
 
 import (
+	"budget-helper/budgets"
+	"budget-helper/categories"
 	"budget-helper/database"
 	"budget-helper/router"
 	"budget-helper/users"
@@ -15,8 +17,10 @@ type Server struct {
 
 func NewServer(port string, db *database.Database) *Server {
 	userRepo := users.NewUserRepo(db)
+	budgetRepo := budgets.NewBudgetRepo(db)
+	categoryRepo := categories.NewCategoryRepo(db)
 
-	router := router.NewRouter(userRepo)
+	router := router.NewRouter(userRepo, budgetRepo, categoryRepo)
 	router.RegisterRoutes()
 
 	return &Server{
