@@ -12,5 +12,4 @@ func main() {
 
 	server := NewServer(port, db)
 	server.Run()
-
 }

@@ -12,7 +12,7 @@ func NewBudgetRepo(db *database.Database) *BudgetRepo {
 
 func (b *BudgetRepo) Get(id int) (*database.Budget, error) {
 	var budget database.Budget
-	err := b.db.First(&budget, id).Error
+	err := b.db.Preload("BudgetCategories.Category").Find(&budget, 1).Error
 
 	return &budget, err
 }

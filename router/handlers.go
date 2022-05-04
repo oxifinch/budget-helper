@@ -148,14 +148,11 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 		AppTitle        string
 		PageTitle       string
 		Budget          *database.Budget
-		BudgetRemaining float32
-		BufferRemaining float32
 		Categories      []*database.Category
+		BudgetRemaining float32
 	}{
-		AppTitle:        AppTitle,
-		PageTitle:       "Dashboard",
-		BudgetRemaining: 2568.25,
-		BufferRemaining: 623.91,
+		AppTitle:  AppTitle,
+		PageTitle: "Dashboard",
 	}
 
 	// TODO: Check for authentication and give user the right dashboard.
@@ -166,11 +163,10 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	}
 	data.Budget = b
 
-	cts, err := rt.CategoryRepo.GetAllWithOwnerId(1)
-	if err != nil {
-		log.Fatalf("handleDashboard: %v\n", err)
+	// TODO: Display result with only two digits, this is a bit overkill
+	for _, val := range data.Budget.BudgetCategories {
+		data.BudgetRemaining = data.BudgetRemaining + val.Remaining
 	}
-	data.Categories = cts
 
 	err = tmplDashboard.ExecuteTemplate(w, "base", data)
 	if err != nil {
