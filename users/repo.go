@@ -13,21 +13,23 @@ func NewUserRepo(db *database.Database) *UserRepo {
 }
 
 func (u *UserRepo) Get(id int) (*database.User, error) {
-	user := database.User{}
+	var user database.User
+
 	err := u.db.First(&user, id).Error
 
 	return &user, err
 }
 
 func (u *UserRepo) GetAll() (*[]database.User, error) {
-	users := []database.User{}
+	var users []database.User
+
 	err := u.db.Find(&users).Error
 
 	return &users, err
 }
 
 func (u *UserRepo) GetByCredentials(username string, password string) (*database.User, error) {
-	user := database.User{}
+	var user database.User
 
 	err := u.db.Where(&database.User{
 		Username: username,

@@ -15,7 +15,6 @@ type Database struct {
 
 func NewDatabase() *Database {
 	db, err := gorm.Open(sqlite.Open("./app-db.db"), &gorm.Config{})
-	// conn, err := sql.Open("sqlite3", "./app-db.db")
 	if err != nil {
 		log.Fatalf("NewDatabase: failed to connect to database: %v", err)
 	}
@@ -29,6 +28,8 @@ func NewDatabase() *Database {
 }
 
 func (db *Database) Seed() {
+	log.Printf("\n\nWARNING: Seeding database, dropping all data!\n\n")
+
 	// Delete old data first so there are no duplicates.
 	db.Exec("DELETE FROM users")
 	db.Exec("DELETE FROM budgets")
