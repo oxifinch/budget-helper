@@ -35,4 +35,14 @@ type BudgetCategory struct {
 	CategoryID uint
 	BudgetID   uint
 	Category   Category
+	Payments   []Payment
+}
+
+type Payment struct {
+	gorm.Model
+	Date             string
+	Amount           float32
+	Note             string
+	CategoryID       uint
+	BudgetCategoryID uint
 }
