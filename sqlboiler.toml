@@ -1,5 +1,0 @@
-wipe = true
-no-tests = true
-    
-[sqlite3]
-    dbname = "./app-db.db"
