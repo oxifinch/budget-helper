@@ -11,9 +11,27 @@
                 max-width: 50rem;
                 margin: auto;
                 padding: 2rem 0;
+                line-height: 1.4rem;
+                color: #4c4c4c;
+                background-color: #f2f2f2;
+            }
+            a:link {
+                color: #5588a0;
+            }
+
+            a:visited {
+                color: #6c6499;
             }
         </style>
     </head>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/login">Sign in</a>
+        <a href="/register">Register</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/beans">Eat some beans</a>
+    </nav>
+
     <body>{{template "body" .}}</body>
 </html>
 {{end}}

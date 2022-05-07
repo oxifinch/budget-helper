@@ -27,11 +27,6 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	}
 	data.Budget = b
 
-	// TODO: Display result with only two digits, this is a bit overkill
-	// for _, val := range data.Budget.BudgetCategories {
-	// 	data.BudgetRemaining = data.BudgetRemaining + val.Remaining
-	// }
-
 	err = tmplDashboard.ExecuteTemplate(w, "base", data)
 	if err != nil {
 		log.Fatalf("handleDashboard: %v\n", err)
