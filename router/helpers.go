@@ -21,7 +21,7 @@ var (
 
 // -- TEMPLATES: PARTIALS --
 var (
-	tmplPartPayment = addTemplate("partials/payment.html")
+	tmplPartPayment = addPartial("partials/payment.html")
 )
 
 const (
@@ -32,6 +32,10 @@ const (
 
 func addTemplate(path string) *template.Template {
 	return template.Must(template.ParseFiles(fmt.Sprintf("./templates/%v", path), "./templates/base.html"))
+}
+
+func addPartial(path string) *template.Template {
+	return template.Must(template.ParseFiles(fmt.Sprintf("./templates/%v", path)))
 }
 
 func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, statusMessage string, detailedMessage string) {
