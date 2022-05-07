@@ -19,11 +19,9 @@
     <hr>
 
     <h2>Transaction Log</h2>
-    {{ range .Budget.BudgetCategories }}
-        {{ range .Payments }}
-        <p>{{ .Date }} | {{ .Amount }}</p>
-        {{end}}
-    {{end}}
+    <div id="list-payments" hx-get="/payments?id={{ .Budget.ID }}" hx-trigger="load">
+
+    </div>
 
 </div>
 

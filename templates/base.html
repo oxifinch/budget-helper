@@ -26,7 +26,21 @@
             nav {
                 border-bottom: 2px solid black;
             }
+
+            .dashboard-payment {
+                display: grid;
+                grid-template-columns: 1fr 2fr 2fr 1fr;
+            }
+
+            .payment-date {
+                color: gray;
+            }
+
+            .payment-amount {
+                color: #ff0000;
+            }
         </style>
+        <script src="https://unpkg.com/htmx.org@1.7.0" integrity="sha384-EzBXYPt0/T6gxNp0nuPtLkmRpmDBbjg6WmCUZRLXBBwYYmwAUxzlSGej0ARHX0Bo" crossorigin="anonymous" defer></script>
     </head>
     <nav>
         <a href="/">Home</a>
