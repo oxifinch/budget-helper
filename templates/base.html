@@ -6,6 +6,13 @@
         <title>{{ .PageTitle }} | {{ .AppTitle }}</title>
         <meta name="description" content="HTML Boilerplate"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <style>
+            body {
+                max-width: 50rem;
+                margin: auto;
+                padding: 2rem 0;
+            }
+        </style>
     </head>
     <body>{{template "body" .}}</body>
 </html>

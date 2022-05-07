@@ -75,9 +75,9 @@ func (db *Database) Seed() {
 	}
 
 	newBudgetCategories := []*BudgetCategory{
-		{Allocated: 4500.00, Remaining: 3095.16, BudgetID: 1, CategoryID: 1},
-		{Allocated: 1000.00, Remaining: 421.62, BudgetID: 1, CategoryID: 2},
-		{Allocated: 500.00, Remaining: 102.52, BudgetID: 1, CategoryID: 3},
+		{Allocated: 4500.00, BudgetID: 1, CategoryID: 1},
+		{Allocated: 1000.00, BudgetID: 1, CategoryID: 2},
+		{Allocated: 500.00, BudgetID: 1, CategoryID: 3},
 	}
 	for _, bc := range newBudgetCategories {
 		err := db.Create(bc).Error

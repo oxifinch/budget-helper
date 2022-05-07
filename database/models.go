@@ -31,7 +31,6 @@ type Category struct {
 type BudgetCategory struct {
 	gorm.Model
 	Allocated  float32
-	Remaining  float32
 	CategoryID uint
 	BudgetID   uint
 	Category   Category
