@@ -1,9 +1,9 @@
 {{ range .Payments }}
    
-<div class="dashboard-payment">
-    <p class="payment-date">{{ .Date }}</p>
+<div class="grid">
+    <u class="uayment-date">{{ .Date }}</u>
     <p class="payment-amount">-{{ .Amount }} CURRENCY</p>
-    <p class="payment-note">{{ .Note }}</p>
+    <small class="smallayment-note">{{ .Note }}</small>
     <p class="payment-category">{{ .BudgetCategory.Category.Name }}</p>
 </div>
 

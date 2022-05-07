@@ -1,28 +1,40 @@
 {{define "body"}}
-<h2>Dashboard</h2>
+<header class="container">
+    <small>{{ .Budget.StartDate }} - {{ .Budget.EndDate }}</small>
+    <div id="dashboard-summary" class="grid">
+        <div>
+            <h3>Balance: {{ .BudgetRemaining }} {{ .Budget.Currency }}</h3>
+            <small><em>Buffer: {{ .BufferRemaining }} {{ .Budget.Currency }}</em></small>
+        </div>
+        <div>
+            <strong>{{ .PercentageSpent }}% spent</strong>
+            <progress value="{{ .PercentageSpent }}" max="100"></progress>
+        </div>
+    </div>
+</header>
 
-<div class="dashboard-summary">
-    <p><em>{{ .Budget.StartDate }} - {{ .Budget.EndDate }}</em></p>
-    <!-- TODO: Total allocated should be visible in a pop-up menu, not all the time -->
-    <p><strong>Total allocated: {{ .Budget.Allocated }} {{ .Budget.Currency }}</strong></p>
-    <h3>Remaining budget: {{ .BudgetRemaining }} {{ .Budget.Currency }}</h3>
-    <h3>Remaining buffer: {{ .BufferRemaining }} {{ .Budget.Currency }}</h3>
-    <hr>
-    <!-- TODO: Categories should be visible in a pop-up menu, not all the time -->
-    <h2>Categories</h2>
-    {{ range .Budget.BudgetCategories }}
-        <p style="background-color: {{ .Category.Color }}"><strong>{{ .Category.Name }}</strong></p>  
-        <p><em>{{ .Category.Description }}</em></p>
-        <h3>Allocated: {{ .Allocated }}</h3>
-    {{end}}
-
-    <hr>
-
+<div id="dashboard-content" class="container">
     <h2>Transaction Log</h2>
+    <!-- DROP-DOWN FILTER LIST -->
+    <details role="list">
+        <summary aria-haspopup="listbox">Filter categories</summary>
+        <ul role="listbox">
+            <li>
+                <button>Show all</button>
+            </li>
+            {{range .Budget.BudgetCategories }}
+            <li>
+                <label>
+                    <input type="checkbox" checked>{{ .Category.Name }}
+                </label>
+            </li>
+            {{end}}
+        </ul>
+    </details>
+
+    <!-- LIST OF PAYMENTS -->
     <div id="list-payments" hx-get="/payments?id={{ .Budget.ID }}" hx-trigger="load">
 
     </div>
-
 </div>
-
 {{end}}

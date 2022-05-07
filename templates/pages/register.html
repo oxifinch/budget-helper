@@ -1,16 +1,23 @@
 {{define "body"}}
-<h2>Register a new {{ .AppTitle }} account</h2>
+<header class="container">
+    <h2>Register a new {{ .AppTitle }} account</h2>
+</header>
 
-<form action="/registerSave" method="POST">
+<div class="container">
 
-    <!-- TODO: Check that username is available -->
-    <label for="username">Username</label><br>
-    <input type="text" name="username" required><br>
+    <form action="/registerSave" method="POST">
 
-    <!-- TODO: Confirm password -->
-    <label for="password">Password</label><br>
-    <input type="password" name="password" required><br>
+        <!-- TODO: Check that username is available -->
+        <label for="username">Username</label><br>
+        <input type="text" name="username" required><br>
 
-    <button type="submit">Submit</button>
-</form>
+        <!-- TODO: Confirm password -->
+        <label for="password">Password</label><br>
+        <input type="password" name="password" required><br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <p>Already registered? <a href="/login">Sign in.</a></p>
+</div>
 {{end}}

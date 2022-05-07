@@ -6,50 +6,69 @@
         <title>{{ .PageTitle }} | {{ .AppTitle }}</title>
         <meta name="description" content="HTML Boilerplate"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
         <style>
-            body {
-                max-width: 60rem;
-                margin: auto;
-                padding: 2rem 0;
-                line-height: 1.4rem;
-                color: #4c4c4c;
-                background-color: #f2f2f2;
-            }
-            a:link {
-                color: #5588a0;
-            }
-
-            a:visited {
-                color: #6c6499;
-            }
-
-            nav {
-                border-bottom: 2px solid black;
-            }
-
-            .dashboard-payment {
-                display: grid;
-                grid-template-columns: 1fr 2fr 2fr 1fr;
-            }
-
-            .payment-date {
-                color: gray;
-            }
-
-            .payment-amount {
-                color: #ff0000;
+            :root {
+                --primary: #679178;
+                --primary-hover: #7eaa90;
+                --primary-focus: #496d57;
+                --primary-inverse: #fff;
             }
         </style>
+        <!-- <style> -->
+        <!--     body { -->
+        <!--         max-width: 60rem; -->
+        <!--         margin: auto; -->
+        <!--         padding: 2rem 0; -->
+        <!--         line-height: 1.4rem; -->
+        <!--         color: #4c4c4c; -->
+        <!--         background-color: #f2f2f2; -->
+        <!--     } -->
+        <!--     a:link { -->
+        <!--         color: #5588a0; -->
+        <!--     } -->
+
+        <!--     a:visited { -->
+        <!--         color: #6c6499; -->
+        <!--     } -->
+
+        <!--     nav { -->
+        <!--         border-bottom: 2px solid black; -->
+        <!--     } -->
+
+        <!--     .dashboard-payment { -->
+        <!--         display: grid; -->
+        <!--         grid-template-columns: 1fr 2fr 2fr 1fr; -->
+        <!--     } -->
+
+        <!--     .payment-date { -->
+        <!--         color: gray; -->
+        <!--     } -->
+
+        <!--     .payment-amount { -->
+        <!--         color: #ff0000; -->
+        <!--     } -->
+        <!-- </style> -->
         <script src="https://unpkg.com/htmx.org@1.7.0" integrity="sha384-EzBXYPt0/T6gxNp0nuPtLkmRpmDBbjg6WmCUZRLXBBwYYmwAUxzlSGej0ARHX0Bo" crossorigin="anonymous" defer></script>
     </head>
-    <nav>
-        <a href="/">Home</a>
-        <a href="/login">Sign in</a>
-        <a href="/register">Register</a>
-        <a href="/dashboard">Dashboard</a>
-        <a href="/payments?id=1">See payments for budget 1</a>
-    </nav>
 
-    <body>{{template "body" .}}</body>
+    <body>
+    <div class="container">
+        <nav>
+            <ul>
+                <li><strong>Budget Helper</strong></li>
+            </ul>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/login">Sign in</a></li>
+                <li><a href="/register">Register</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    {{template "body" .}}
+
+    </body>
 </html>
 {{end}}
