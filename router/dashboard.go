@@ -31,10 +31,10 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	var totalSpent float32
 	var totalAllocated float32
 	for _, bc := range b.BudgetCategories {
-		totalAllocated = totalAllocated + bc.Allocated
+		totalAllocated += bc.Allocated
 
 		for _, p := range bc.Payments {
-			totalSpent = totalSpent + p.Amount
+			totalSpent += p.Amount
 		}
 	}
 	data.BudgetRemaining = totalAllocated - totalSpent
