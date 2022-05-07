@@ -3,6 +3,7 @@ package router
 import (
 	"budget-helper/budgets"
 	"budget-helper/categories"
+	"budget-helper/payments"
 	"budget-helper/users"
 	"net/http"
 )
@@ -12,9 +13,10 @@ type Router struct {
 	UserRepo     *users.UserRepo
 	BudgetRepo   *budgets.BudgetRepo
 	CategoryRepo *categories.CategoryRepo
+	PaymentRepo  *payments.PaymentRepo
 }
 
-func NewRouter(u *users.UserRepo, b *budgets.BudgetRepo, c *categories.CategoryRepo) *Router {
+func NewRouter(u *users.UserRepo, b *budgets.BudgetRepo, c *categories.CategoryRepo, p *payments.PaymentRepo) *Router {
 	h := http.NewServeMux()
 
 	return &Router{
@@ -22,6 +24,7 @@ func NewRouter(u *users.UserRepo, b *budgets.BudgetRepo, c *categories.CategoryR
 		UserRepo:     u,
 		BudgetRepo:   b,
 		CategoryRepo: c,
+		PaymentRepo:  p,
 	}
 }
 
@@ -33,4 +36,5 @@ func (rt *Router) RegisterRoutes() {
 	rt.Handler.HandleFunc("/register", rt.handleRegister)
 	rt.Handler.HandleFunc("/registerSave", rt.handleRegisterSave)
 	rt.Handler.HandleFunc("/dashboard", rt.handleDashboard)
+	rt.Handler.HandleFunc("/payments", rt.handlePaymentsBudget)
 }
