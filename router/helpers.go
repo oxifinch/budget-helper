@@ -1,10 +1,12 @@
 package router
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -50,4 +52,11 @@ func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, st
 
 func nameAndPassValid(username string, password string) bool {
 	return strings.TrimSpace(username) != "" && strings.TrimSpace(password) != ""
+}
+
+func saveJson(data struct{}) error {
+	json, err := json.MarshalIndent(data, "", "\t")
+	err = os.WriteFile("./data-budget.json", json, 0666)
+
+	return err
 }

@@ -8,7 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <style>
             body {
-                max-width: 50rem;
+                max-width: 60rem;
                 margin: auto;
                 padding: 2rem 0;
                 line-height: 1.4rem;
@@ -22,6 +22,10 @@
             a:visited {
                 color: #6c6499;
             }
+
+            nav {
+                border-bottom: 2px solid black;
+            }
         </style>
     </head>
     <nav>
@@ -29,7 +33,6 @@
         <a href="/login">Sign in</a>
         <a href="/register">Register</a>
         <a href="/dashboard">Dashboard</a>
-        <a href="/beans">Eat some beans</a>
     </nav>
 
     <body>{{template "body" .}}</body>

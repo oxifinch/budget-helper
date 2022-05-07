@@ -14,6 +14,7 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 		Budget          *database.Budget
 		Categories      []*database.Category
 		BudgetRemaining float32
+		BufferRemaining float32
 	}{
 		AppTitle:  AppTitle,
 		PageTitle: "Dashboard",
@@ -26,6 +27,19 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("handleDashboard: %v\n", err)
 	}
 	data.Budget = b
+
+	var totalSpent float32
+	var totalAllocated float32
+	for _, bc := range b.BudgetCategories {
+		totalAllocated = totalAllocated + bc.Allocated
+
+		for _, p := range bc.Payments {
+			totalSpent = totalSpent + p.Amount
+		}
+	}
+	data.BudgetRemaining = totalAllocated - totalSpent
+	// TODO: BudgetRemaining should be calculated here.
+	// BufferRemaining = (Budget.Allocated - BudgetCategories.Allocated) - (Uncategorized payments + BudgetCategory deficits)
 
 	err = tmplDashboard.ExecuteTemplate(w, "base", data)
 	if err != nil {
