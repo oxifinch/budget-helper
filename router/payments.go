@@ -1,7 +1,7 @@
 package router
 
 import (
-	"fmt"
+	"budget-helper/database"
 	"log"
 	"net/http"
 	"strconv"
@@ -22,8 +22,15 @@ func (rt *Router) handlePaymentsBudget(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("main: %v\n", err)
 	}
 
-	for _, p := range *ps {
-		fmt.Fprintf(w, "%v :: Date: %v | Amount: %v\n", p.ID, p.Date, p.Amount)
-		fmt.Fprintf(w, "\t - Belongs to BudgetCategory: %v\n", p.BudgetCategory.Category.Name)
+	data := struct {
+		Payments []database.Payment
+	}{
+		Payments: *ps,
 	}
+
+	err = tmplPartPayment.Execute(w, data)
+	if err != nil {
+		log.Fatalf("handlePaymentsBudget: %v\n", err)
+	}
+
 }

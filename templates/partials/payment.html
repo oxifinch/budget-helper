@@ -1,0 +1,26 @@
+<!-- Including style here now, for easy development and clarity -->
+<style>
+    .dashboard-payment {
+        display: grid;
+        grid-template-columns: 1fr 2fr 2fr 1fr;
+    }
+
+    .payment-date {
+        color: gray;
+    }
+
+    .payment-amount {
+        color: #ff0000;
+    }
+</style>
+
+{{ range .Payments }}
+   
+<div class="dashboard-payment">
+    <p class="payment-date">{{ .Date }}</p>
+    <p class="payment-amount">-{{ .Amount }} CURRENCY</p>
+    <p class="payment-note">{{ .Note }}</p>
+    <p class="payment-category">{{ .BudgetCategory.Category.Name }}</p>
+</div>
+
+{{end}}

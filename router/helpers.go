@@ -10,12 +10,18 @@ import (
 	"strings"
 )
 
+// -- TEMPLATES: FULL PAGES --
 var (
 	tmplHome      = addTemplate("pages/home.html")
 	tmplError     = addTemplate("pages/error.html")
 	tmplLogin     = addTemplate("pages/login.html")
 	tmplRegister  = addTemplate("pages/register.html")
 	tmplDashboard = addTemplate("pages/dashboard.html")
+)
+
+// -- TEMPLATES: PARTIALS --
+var (
+	tmplPartPayment = addTemplate("partials/payment.html")
 )
 
 const (
