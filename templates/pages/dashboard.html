@@ -1,4 +1,5 @@
 {{define "body"}}
+<!-- TODO: Re-render this header when new payments are added! -->
 <header class="container">
     <small>{{ .Budget.StartDate }} - {{ .Budget.EndDate }}</small>
     <div id="dashboard-summary" class="grid">
@@ -39,6 +40,7 @@
 
     <!-- LIST OF PAYMENTS -->
     <div id="list-payments" hx-get="/payments?id={{ .Budget.ID }}" hx-trigger="load">
+    <!-- <div id="list-payments"> -->
 
     </div>
 
@@ -47,11 +49,13 @@
         <article>
             <a href="#close" aria-label="Close" class="close" data-target="modal-newpayment" onClick="toggleModal(event)"></a>
             <h3>New Payment</h3>
-            <p>Select a category, or leave it blank to pay from the buffer.</p>
+            <!-- TODO: Paying without a category isn't supported yet. -->
+            <!-- <p>Select a category, or leave it blank to pay from the buffer.</p> -->
+            <p>Select a category and input the payment date and amount. Notes are optional.</p>
 
             <form>
                 <select name="budget_category_id">
-                    <option value="none">No category</option>
+                    <!-- <option value="0">No category</option> -->
                     {{ range .Budget.BudgetCategories }}
                     <option value="{{ .ID }}">{{ .Category.Name }}</option>
                     {{end}}
@@ -73,9 +77,16 @@
                     Note
                     <input type="text" name="note">
                 </label>
+
+                <button hx-post="/paymentSave"
+                    hx-target="#newpayment-confirmation">Confirm</button>
             </form>
 
             <footer>
+                <p id="newpayment-confirmation" hx-trigger="click" hx-get="/payments?id={{ .Budget.ID }}" hx-target="#something">
+
+                </p>
+
                 <a href="#cancel" 
                     role="button"
                     class="secondary"
@@ -84,12 +95,14 @@
                     Cancel
                 </a>
 
-                <a href="#confirm"
-                    role="button"
-                    data-target="modal-newpayment"
-                    onClick="toggleModal(event)">
-                    Confirm
-                </a>
+                <!-- <a href="#confirm" -->
+                <!--     role="button" -->
+                <!--     data-target="modal-newpayment" -->
+                <!--     onClick="toggleModal(event)" -->
+                <!--     hx-post="/paymentSave" -->
+                <!--     hx-trigger="click"> -->
+                <!--     Confirm -->
+                <!-- </a> -->
             </footer>
         </article>
     </dialog>

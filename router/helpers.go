@@ -21,7 +21,8 @@ var (
 
 // -- TEMPLATES: PARTIALS --
 var (
-	tmplPartPayment = addPartial("partials/payment.html")
+	tmplPartPayment          = addPartial("partials/payment.html")
+	tmplPartPaymentConfirmed = addPartial("partials/payment-confirmed.html")
 )
 
 const (

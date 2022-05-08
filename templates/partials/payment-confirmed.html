@@ -1,0 +1,8 @@
+<p>
+{{if .Success }}
+    <!-- TODO: Set this ID correctly -->
+    <ins hx-get="/payments?id=1" hx-trigger="load delay:500ms" hx-target="#list-payments">Payment added!</ins>
+{{else}}
+    <p><b>ERROR: </b>{{ .ErrorMessage }}</p>
+{{end}}
+</p>

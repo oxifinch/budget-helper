@@ -42,3 +42,17 @@ func (p *PaymentRepo) GetAllByBudgetCategoryID(id uint) (*[]database.Payment, er
 
 	return &payments, err
 }
+
+func (p *PaymentRepo) Create(date string, amount float32, note string, budgetCategoryID uint) (uint, error) {
+
+	payment := database.Payment{
+		Date:             date,
+		Amount:           amount,
+		Note:             note,
+		BudgetCategoryID: budgetCategoryID,
+	}
+
+	err := p.db.Create(&payment).Error
+
+	return payment.ID, err
+}
