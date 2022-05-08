@@ -6,7 +6,35 @@
         <title>{{ .PageTitle }} | {{ .AppTitle }}</title>
         <meta name="description" content="HTML Boilerplate"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <style>
+            body {
+                max-width: 60rem;
+                margin: auto;
+                padding: 2rem 0;
+                line-height: 1.4rem;
+                color: #4c4c4c;
+                background-color: #f2f2f2;
+            }
+            a:link {
+                color: #5588a0;
+            }
+
+            a:visited {
+                color: #6c6499;
+            }
+
+            nav {
+                border-bottom: 2px solid black;
+            }
+        </style>
     </head>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/login">Sign in</a>
+        <a href="/register">Register</a>
+        <a href="/dashboard">Dashboard</a>
+    </nav>
+
     <body>{{template "body" .}}</body>
 </html>
 {{end}}

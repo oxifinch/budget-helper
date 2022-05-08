@@ -3,20 +3,28 @@
 
 <div class="dashboard-summary">
     <p><em>{{ .Budget.StartDate }} - {{ .Budget.EndDate }}</em></p>
-    <h2><strong>Total allocated: {{ .Budget.Allocated }} {{ .Budget.Currency }}</strong></h2>
-    <h3>Remaining budget: {{ .BudgetRemaining }}</h3>
+    <!-- TODO: Total allocated should be visible in a pop-up menu, not all the time -->
+    <p><strong>Total allocated: {{ .Budget.Allocated }} {{ .Budget.Currency }}</strong></p>
+    <h3>Remaining budget: {{ .BudgetRemaining }} {{ .Budget.Currency }}</h3>
+    <h3>Remaining buffer: {{ .BufferRemaining }} {{ .Budget.Currency }}</h3>
     <hr>
+    <!-- TODO: Categories should be visible in a pop-up menu, not all the time -->
     <h2>Categories</h2>
     {{ range .Budget.BudgetCategories }}
-        <hr>
         <p style="background-color: {{ .Category.Color }}"><strong>{{ .Category.Name }}</strong></p>  
         <p><em>{{ .Category.Description }}</em></p>
         <h3>Allocated: {{ .Allocated }}</h3>
-        <h3>Remaining: {{ .Remaining }}</h3>
-        <hr>
     {{end}}
-</div>
 
-<a href="/">Log out</a>
+    <hr>
+
+    <h2>Transaction Log</h2>
+    {{ range .Budget.BudgetCategories }}
+        {{ range .Payments }}
+        <p>{{ .Date }} | {{ .Amount }}</p>
+        {{end}}
+    {{end}}
+
+</div>
 
 {{end}}

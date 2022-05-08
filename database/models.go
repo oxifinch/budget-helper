@@ -31,8 +31,18 @@ type Category struct {
 type BudgetCategory struct {
 	gorm.Model
 	Allocated  float32
-	Remaining  float32
 	CategoryID uint
 	BudgetID   uint
 	Category   Category
+	Payments   []Payment
+}
+
+type Payment struct {
+	gorm.Model
+	Date             string
+	Amount           float32
+	Note             string
+	CategoryID       uint
+	Category         Category
+	BudgetCategoryID uint
 }
