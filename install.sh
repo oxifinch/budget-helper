@@ -1,14 +1,29 @@
 #!/bin/bash
 
-go install github.com/volatiletech/sqlboiler/v4@latest
-go install github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-sqlite3@latest
+echo "This script will install project dependencies and remove the old database."
 
-go get github.com/mattn/go-sqlite3
-go get github.com/volatiletech/sqlboiler/v4
-go get github.com/volatiletech/sqlboiler/v4/queries/qm
-go get github.com/volatiletech/sqlboiler/v4/boil
-go get github.com/volatiletech/null/v8
+read -p "Continue? [Y/n] " input
+case $input in
+    "Y" | "y" | "")
+        echo "Installing..."
+        ;;
+    *)
+        echo "Aborted."
+        exit 1
+        ;;
+esac
 
-sqlite3 app-db.db ".read init.sql"
+echo "- Dowloading dependencies."
+go get gorm.io/gorm
+go get gorm.io/driver/sqlite
 
-sqlboiler sqlite3
+echo "- Cleaning up module and updating."
+go mod tidy
+go get -u 
+
+if [[ -f "./app-db.db" ]]; then
+    echo "- Removing old database file."
+    rm ./app-db.db
+fi
+
+echo "Done!"
