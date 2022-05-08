@@ -14,27 +14,58 @@
 </header>
 
 <div id="dashboard-content" class="container">
-    <h2>Transaction Log</h2>
-    <!-- DROP-DOWN FILTER LIST -->
-    <details role="list">
-        <summary aria-haspopup="listbox">Filter categories</summary>
-        <ul role="listbox">
-            <li>
-                <button>Show all</button>
-            </li>
-            {{range .Budget.BudgetCategories }}
-            <li>
-                <label>
-                    <input type="checkbox" checked>{{ .Category.Name }}
-                </label>
-            </li>
-            {{end}}
-        </ul>
-    </details>
+    <div class="grid">
+        <h2>Transaction Log</h2>
+
+        <!-- DROP-DOWN FILTER LIST -->
+        <details role="list">
+            <summary aria-haspopup="listbox">Filter categories</summary>
+            <ul role="listbox">
+                <li>
+                    <button>Show all</button>
+                </li>
+                {{range .Budget.BudgetCategories }}
+                <li>
+                    <label>
+                        <input type="checkbox" checked>{{ .Category.Name }}
+                    </label>
+                </li>
+                {{end}}
+            </ul>
+        </details>
+
+        <button data-target="modal-newpayment" onClick="toggleModal(event)">New Payment</button>
+    </div>
 
     <!-- LIST OF PAYMENTS -->
     <div id="list-payments" hx-get="/payments?id={{ .Budget.ID }}" hx-trigger="load">
 
     </div>
+
+    <!-- NEW PAYMENT MODAL -->
+    <dialog id="modal-newpayment">
+        <article>
+            <a href="#close" aria-label="Close" class="close" data-target="modal-newpayment" onClick="toggleModal(event)"></a>
+            <h3>New Payment</h3>
+            <p>Select a category, or leave it blank to pay from the buffer.</p>
+
+            <footer>
+                <a href="#cancel" 
+                    role="button"
+                    class="secondary"
+                    data-target="modal-newpayment"
+                    onClick="toggleModal(event)">
+                    Cancel
+                </a>
+
+                <a href="#confirm"
+                    role="button"
+                    data-target="modal-newpayment"
+                    onClick="toggleModal(event)">
+                    Confirm
+                </a>
+            </footer>
+        </article>
+    </dialog>
 </div>
 {{end}}
