@@ -49,6 +49,32 @@
             <h3>New Payment</h3>
             <p>Select a category, or leave it blank to pay from the buffer.</p>
 
+            <form>
+                <select name="budget_category_id">
+                    <option value="none">No category</option>
+                    {{ range .Budget.BudgetCategories }}
+                    <option value="{{ .ID }}">{{ .Category.Name }}</option>
+                    {{end}}
+                </select>
+
+                <div class="grid">
+                    <label for="date">
+                        Date
+                        <input type="date" name="date" required>
+                    </label>
+
+                    <label for="amount">
+                        Amount
+                        <input type="number" name="amount" required>
+                    </label>
+                </div>
+
+                <label for="note">
+                    Note
+                    <input type="text" name="note">
+                </label>
+            </form>
+
             <footer>
                 <a href="#cancel" 
                     role="button"
