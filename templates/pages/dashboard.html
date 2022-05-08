@@ -8,6 +8,7 @@
             <small><em>Buffer: {{ .BufferRemaining }} {{ .Budget.Currency }}</em></small>
         </div>
         <div>
+            <!-- TODO: Add bars for individual categories as well -->
             <strong>{{ .PercentageSpent }}% spent</strong>
             <progress value="{{ .PercentageSpent }}" max="100"></progress>
         </div>
@@ -39,9 +40,7 @@
     </div>
 
     <!-- LIST OF PAYMENTS -->
-    <div id="list-payments" hx-get="/payments?id={{ .Budget.ID }}" hx-trigger="load">
-    <!-- <div id="list-payments"> -->
-
+    <div id="list-payments" hx-get="/payments/budget?id={{ .Budget.ID }}" hx-trigger="load">
     </div>
 
     <!-- NEW PAYMENT MODAL -->
@@ -55,6 +54,7 @@
 
             <form>
                 <select name="budget_category_id">
+                    <!-- TODO: Paying without a category isn't supported yet. -->
                     <!-- <option value="0">No category</option> -->
                     {{ range .Budget.BudgetCategories }}
                     <option value="{{ .ID }}">{{ .Category.Name }}</option>
@@ -83,7 +83,7 @@
             </form>
 
             <footer>
-                <p id="newpayment-confirmation" hx-trigger="click" hx-get="/payments?id={{ .Budget.ID }}" hx-target="#something">
+                <p id="newpayment-confirmation" hx-trigger="click" hx-get="/payments/budget?id={{ .Budget.ID }}" hx-target="#something">
 
                 </p>
 
@@ -94,15 +94,6 @@
                     onClick="toggleModal(event)">
                     Cancel
                 </a>
-
-                <!-- <a href="#confirm" -->
-                <!--     role="button" -->
-                <!--     data-target="modal-newpayment" -->
-                <!--     onClick="toggleModal(event)" -->
-                <!--     hx-post="/paymentSave" -->
-                <!--     hx-trigger="click"> -->
-                <!--     Confirm -->
-                <!-- </a> -->
             </footer>
         </article>
     </dialog>
