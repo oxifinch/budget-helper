@@ -12,11 +12,13 @@ import (
 
 // -- TEMPLATES: FULL PAGES --
 var (
-	tmplHome      = addTemplate("pages/home.html")
-	tmplError     = addTemplate("pages/error.html")
-	tmplLogin     = addTemplate("pages/login.html")
-	tmplRegister  = addTemplate("pages/register.html")
-	tmplDashboard = addTemplate("pages/dashboard.html")
+	tmplHome          = addTemplate("pages/home.html")
+	tmplError         = addTemplate("pages/error.html")
+	tmplLoginRequired = addTemplate("pages/loginrequired.html")
+	tmplLogin         = addTemplate("pages/login.html")
+	tmplRegister      = addTemplate("pages/register.html")
+	tmplDashboard     = addTemplate("pages/dashboard.html")
+	tmplNewBudget     = addTemplate("pages/newbudget.html")
 )
 
 // -- TEMPLATES: PARTIALS --
@@ -57,6 +59,22 @@ func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, st
 	err := tmplError.ExecuteTemplate(w, "base", data)
 	if err != nil {
 		log.Fatalf("displayErrorPage: %v\n", err)
+	}
+}
+
+func displayLoginRequired(w http.ResponseWriter, r *http.Request) {
+	data := struct {
+		AppTitle  string
+		PageTitle string
+	}{
+		AppTitle:  AppTitle,
+		PageTitle: "Login Required",
+	}
+
+	w.WriteHeader(http.StatusUnauthorized)
+	err := tmplLoginRequired.ExecuteTemplate(w, "base", data)
+	if err != nil {
+		log.Fatalf("displayLoginRequired: %v\n", err)
 	}
 }
 

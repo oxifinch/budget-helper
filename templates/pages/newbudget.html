@@ -1,0 +1,29 @@
+{{define "body"}}
+    <header class="container">
+        <h3>Create a new budget</h3>
+    </header> 
+
+    <div class="container">
+        <form action="/newBudgetSave" method="POST">
+
+            <!-- DATE INPUTS -->
+            <div class="grid">
+                <label for="start_date">
+                    Start date
+                    <input type="date" name="start_date">
+                </label>
+
+                <label for="end_date">
+                    End date
+                    <input type="date" name="end_date">
+                </label>
+            </div>
+
+            <label for="allocated">
+                <!-- TODO: Should be preloaded from recurring costs and income -->
+                Total money allocated
+                <input type="number" name="allocated">
+            </label>
+        </form>
+    </div>
+{{end}}
