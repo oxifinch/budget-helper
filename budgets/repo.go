@@ -17,7 +17,7 @@ func (b *BudgetRepo) Get(id int) (*database.Budget, error) {
 
 	err := b.db.Preload("BudgetCategories.Category").
 		Preload("BudgetCategories.Payments").
-		Find(&budget, id).Error
+		First(&budget, id).Error
 
 	return &budget, err
 }
