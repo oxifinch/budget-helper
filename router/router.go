@@ -39,4 +39,5 @@ func (rt *Router) RegisterRoutes() {
 	rt.Handler.HandleFunc("/dashboard", rt.handleDashboard)
 	rt.Handler.HandleFunc("/payments", rt.handlePaymentsBudget)
 	rt.Handler.HandleFunc("/newBudget", rt.handleNewBudget)
+	rt.Handler.HandleFunc("/newBudgetSave", rt.handleNewBudgetSave)
 }

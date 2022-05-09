@@ -41,8 +41,8 @@ func (rt *Router) handleLoginSave(w http.ResponseWriter, r *http.Request) {
 			"We found no user with the provided credentials in the database. Please check your username and password, and try again.")
 	}
 
-	// TODO: Set session before redirecting
-	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+	// TODO: Set session before redirecting and get user's actual active budget
+	http.Redirect(w, r, "/dashboard?id=1", http.StatusSeeOther)
 }
 
 func (rt *Router) handleRegister(w http.ResponseWriter, r *http.Request) {
@@ -78,5 +78,5 @@ func (rt *Router) handleRegisterSave(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("handleRegisterSave: %v\n", err)
 	}
 
-	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+	http.Redirect(w, r, "/newBudget", http.StatusSeeOther)
 }

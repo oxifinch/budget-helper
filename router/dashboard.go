@@ -2,8 +2,13 @@ package router
 
 import (
 	"budget-helper/database"
+	"errors"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
+
+	"gorm.io/gorm"
 )
 
 // -- DASHBOARD & MAIN APP ROUTES --
@@ -21,11 +26,27 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 		PageTitle: "Dashboard",
 	}
 
-	// TODO: Check for authentication and give user the right dashboard.
-	// Use user 1 and dashboard 1 for now.
-	b, err := rt.BudgetRepo.Get(1)
+	getBudgetID := strings.TrimSpace(r.URL.Query().Get("id"))
+	id, err := strconv.Atoi(getBudgetID)
 	if err != nil {
-		log.Fatalf("handleDashboard: %v\n", err)
+		displayErrorPage(w, r, http.StatusBadRequest, "Bad Request",
+			"The ID of the resource you are trying to access was not included in the request. Check the URL and try again.")
+	}
+	if id < 1 {
+		displayErrorPage(w, r, http.StatusBadRequest, "Bad Request",
+			"The ID submitted in the request is invalid. Check the URL and try again.")
+	}
+
+	// TODO: Check for authentication and give user the right dashboard.
+	log.Printf("Looking for Budget with ID: %v...\n", id)
+	b, err := rt.BudgetRepo.Get(id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			displayErrorPage(w, r, http.StatusNotFound, "Not Found",
+				"The resource you requested could not be found in our database. Check the request and try again.")
+		} else {
+			log.Fatalf("handleDashboard: %v\n", err)
+		}
 	}
 	data.Budget = b
 
