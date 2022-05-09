@@ -16,7 +16,8 @@ type Router struct {
 	PaymentRepo  *payments.PaymentRepo
 }
 
-func NewRouter(u *users.UserRepo, b *budgets.BudgetRepo, c *categories.CategoryRepo, p *payments.PaymentRepo) *Router {
+func NewRouter(u *users.UserRepo, b *budgets.BudgetRepo,
+	c *categories.CategoryRepo, p *payments.PaymentRepo) *Router {
 	h := http.NewServeMux()
 
 	return &Router{
