@@ -25,7 +25,7 @@ func (rt *Router) handlePaymentsBudget(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		Payments []database.Payment
 	}{
-		Payments: *ps,
+		Payments: ps,
 	}
 
 	err = tmplPartPayment.Execute(w, data)

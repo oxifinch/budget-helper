@@ -37,63 +37,63 @@ func (db *Database) Seed() {
 	db.Exec("DELETE FROM budget_categories")
 	db.Exec("DELETE FROM payments")
 
-	newUsers := []*User{
+	newUsers := []User{
 		{Username: "joseph", Password: "secret01"},
 		{Username: "jean-paul", Password: "secret02"},
 		{Username: "bubby", Password: "secret03"},
 	}
 	for _, u := range newUsers {
-		err := db.Create(u).Error
+		err := db.Create(&u).Error
 		if err != nil {
 			log.Fatalf("Seed: %v\n", err)
 		}
 	}
 
-	newBudgets := []*Budget{
+	newBudgets := []Budget{
 		{StartDate: "2022-04-25", EndDate: "2022-05-25", Allocated: 11500.00, Currency: "SEK", UserID: 1},
 		{StartDate: "2022-03-28", EndDate: "2022-04-24", Allocated: 11500.00, Currency: "SEK", UserID: 1},
 		{StartDate: "2022-03-28", EndDate: "2022-04-24", Allocated: 9250.99, Currency: "SEK", UserID: 2},
 		{StartDate: "2022-05-10", EndDate: "2022-06-10", Allocated: 15000.00, Currency: "SEK", UserID: 3},
 	}
 	for _, b := range newBudgets {
-		err := db.Create(b).Error
+		err := db.Create(&b).Error
 		if err != nil {
 			log.Fatalf("Seed: %v\n", err)
 		}
 	}
 
-	newCategories := []*Category{
+	newCategories := []Category{
 		{Name: "Groceries", Description: "Food and stuff.", Color: "#b6eea6", UserID: 1},
 		{Name: "Entertainment", Description: "Videogames and whatever.", Color: "#a4778b", UserID: 1},
 		{Name: "Learning Material", Description: "Books and courses!", Color: "#a9ffcb", UserID: 1},
 	}
 	for _, c := range newCategories {
-		err := db.Create(c).Error
+		err := db.Create(&c).Error
 		if err != nil {
 			log.Fatalf("Seed: %v\n", err)
 		}
 	}
 
-	newBudgetCategories := []*BudgetCategory{
+	newBudgetCategories := []BudgetCategory{
 		{Allocated: 4500.00, BudgetID: 1, CategoryID: 1},
 		{Allocated: 1000.00, BudgetID: 1, CategoryID: 2},
 		{Allocated: 500.00, BudgetID: 1, CategoryID: 3},
 	}
 	for _, bc := range newBudgetCategories {
-		err := db.Create(bc).Error
+		err := db.Create(&bc).Error
 		if err != nil {
 			log.Fatalf("Seed: %v\n", err)
 		}
 	}
 
-	newPayments := []*Payment{
+	newPayments := []Payment{
 		{Date: "2022-05-05", Amount: 129.99, Note: "Lunch and drink", BudgetCategoryID: 1},
 		{Date: "2022-05-05", Amount: 239.99, Note: "Concert tickets.", BudgetCategoryID: 2},
 		{Date: "2022-05-07", Amount: 241.26, Note: "Veggies and toilet paper.", BudgetCategoryID: 1},
 		{Date: "2022-05-08", Amount: 99.99, Note: "Go course.", BudgetCategoryID: 3},
 	}
 	for _, p := range newPayments {
-		err := db.Create(p).Error
+		err := db.Create(&p).Error
 		if err != nil {
 			log.Fatalf("Seed: %v\n", err)
 		}

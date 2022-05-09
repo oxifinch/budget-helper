@@ -20,7 +20,7 @@ func (p *PaymentRepo) Get(id uint) (*database.Payment, error) {
 	return &payment, err
 }
 
-func (p *PaymentRepo) GetAllByBudgetID(id uint) (*[]database.Payment, error) {
+func (p *PaymentRepo) GetAllByBudgetID(id uint) ([]database.Payment, error) {
 	var payments []database.Payment
 
 	err := p.db.Joins("BudgetCategory").
@@ -29,10 +29,10 @@ func (p *PaymentRepo) GetAllByBudgetID(id uint) (*[]database.Payment, error) {
 		Order("date desc").
 		Find(&payments).Error
 
-	return &payments, err
+	return payments, err
 }
 
-func (p *PaymentRepo) GetAllByBudgetCategoryID(id uint) (*[]database.Payment, error) {
+func (p *PaymentRepo) GetAllByBudgetCategoryID(id uint) ([]database.Payment, error) {
 	var payments []database.Payment
 
 	err := p.db.Preload("BudgetCategory.Category").
@@ -40,5 +40,5 @@ func (p *PaymentRepo) GetAllByBudgetCategoryID(id uint) (*[]database.Payment, er
 		Order("date desc").
 		Find(&payments).Error
 
-	return &payments, err
+	return payments, err
 }

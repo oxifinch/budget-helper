@@ -12,7 +12,7 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 		AppTitle        string
 		PageTitle       string
 		Budget          *database.Budget
-		Categories      []*database.Category
+		Categories      []database.Category
 		BudgetRemaining float32
 		BufferRemaining float32
 		PercentageSpent int
