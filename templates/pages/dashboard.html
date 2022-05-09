@@ -3,8 +3,9 @@
     <small>{{ .Budget.StartDate }} - {{ .Budget.EndDate }}</small>
     <div id="dashboard-summary" class="grid">
         <div>
-            <h3>Balance: {{ .BudgetRemaining }} {{ .Budget.Currency }}</h3>
-            <small><em>Buffer: {{ .BufferRemaining }} {{ .Budget.Currency }}</em></small>
+            <!-- TODO: Add User currency here -->
+            <h3>Balance: {{ .BudgetRemaining }}</h3>
+            <small><em>Buffer: {{ .BufferRemaining }}</em></small>
         </div>
         <div>
             <strong>{{ .PercentageSpent }}% spent</strong>

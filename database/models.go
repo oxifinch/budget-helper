@@ -4,10 +4,12 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
-	Username   string
-	Password   string
-	Budgets    []Budget
-	Categories []Category
+	Username       string
+	Password       string
+	ActiveBudgetID uint
+	Currency       string
+	Budgets        []Budget
+	Categories     []Category
 }
 
 type Budget struct {
@@ -15,7 +17,6 @@ type Budget struct {
 	StartDate        string
 	EndDate          string
 	Allocated        float32
-	Currency         string
 	UserID           uint
 	BudgetCategories []BudgetCategory
 }

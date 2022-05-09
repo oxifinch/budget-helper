@@ -64,10 +64,34 @@ func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: Should a HTTP status 201 be sent here?
-	id, err := rt.BudgetRepo.Create(postStartDate, postEndDate, float32(allocated))
+	budgetID, err := rt.BudgetRepo.Create(postStartDate, postEndDate, float32(allocated))
 	if err != nil {
 		log.Fatalf("handleNewBudgetSave: %v\n", err)
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/dashboard?id=%v", id), http.StatusSeeOther)
+	// Loop through categories and create new BudgetCategories
+	for key := range r.PostForm {
+		if !strings.Contains(key, "bc_allocated_") {
+			continue
+		}
+
+		var ctID uint
+		_, err := fmt.Sscanf(key, "bc_allocated_%d", &ctID)
+		if err != nil {
+			log.Fatalf("handleNewBudgetSave: %v\n", err)
+		}
+
+		allocated, err = strconv.ParseFloat(r.PostFormValue(key), 32)
+		if err != nil {
+			log.Fatalf("handleNewBudgetSave: %v\n", err)
+		}
+
+		_, err = rt.BudgetRepo.CreateBudgetCategory(budgetID, ctID, float32(allocated))
+		if err != nil {
+			log.Fatalf("handleNewBudgetSave: %v\n", err)
+		}
+
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/dashboard?id=%v", budgetID), http.StatusSeeOther)
 }
