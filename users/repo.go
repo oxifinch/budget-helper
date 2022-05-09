@@ -20,12 +20,12 @@ func (u *UserRepo) Get(id int) (*database.User, error) {
 	return &user, err
 }
 
-func (u *UserRepo) GetAll() (*[]database.User, error) {
+func (u *UserRepo) GetAll() ([]database.User, error) {
 	var users []database.User
 
 	err := u.db.Find(&users).Error
 
-	return &users, err
+	return users, err
 }
 
 func (u *UserRepo) GetByCredentials(username string, password string) (*database.User, error) {

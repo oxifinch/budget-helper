@@ -10,12 +10,18 @@ import (
 	"strings"
 )
 
+// -- TEMPLATES: FULL PAGES --
 var (
 	tmplHome      = addTemplate("pages/home.html")
 	tmplError     = addTemplate("pages/error.html")
 	tmplLogin     = addTemplate("pages/login.html")
 	tmplRegister  = addTemplate("pages/register.html")
 	tmplDashboard = addTemplate("pages/dashboard.html")
+)
+
+// -- TEMPLATES: PARTIALS --
+var (
+	tmplPartPayment = addPartial("partials/payment.html")
 )
 
 const (
@@ -26,6 +32,10 @@ const (
 
 func addTemplate(path string) *template.Template {
 	return template.Must(template.ParseFiles(fmt.Sprintf("./templates/%v", path), "./templates/base.html"))
+}
+
+func addPartial(path string) *template.Template {
+	return template.Must(template.ParseFiles(fmt.Sprintf("./templates/%v", path)))
 }
 
 func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, statusMessage string, detailedMessage string) {

@@ -1,7 +1,11 @@
 {{define "body"}}
-<h3>{{ .StatusCode }}</h3>
-<h2>{{ .StatusMessage }}</h2>
-<p>{{ .DetailedMessage }}</p>
-<hr>
-<a href="/">Back home</a>
+<header class="container">
+    <h1>Error {{ .StatusCode }}</h1>
+</header>
+
+<div class="container">
+    <h2>{{ .StatusMessage }}</h2>
+    <p>{{ .DetailedMessage }}</p>
+    <a role="button" href="/">Back home</a>
+</div>
 {{end}}

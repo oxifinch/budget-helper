@@ -11,15 +11,18 @@ func NewCategoryRepo(db *database.Database) *CategoryRepo {
 }
 
 func (c *CategoryRepo) Get(id int) (*database.Category, error) {
-	category := database.Category{}
+	var category database.Category
+
 	err := c.db.First(&category, id).Error
 
 	return &category, err
 }
 
-func (c *CategoryRepo) GetAllWithUserID(id int) ([]*database.Category, error) {
-	categories := []*database.Category{}
-	err := c.db.Where("user_id = ?", id).Find(&categories).Error
+func (c *CategoryRepo) GetAllWithUserID(id int) ([]database.Category, error) {
+	var categories []database.Category
+
+	err := c.db.Where("user_id = ?", id).
+		Find(&categories).Error
 
 	return categories, err
 }

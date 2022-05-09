@@ -42,7 +42,6 @@ type Payment struct {
 	Date             string
 	Amount           float32
 	Note             string
-	CategoryID       uint
-	Category         Category
 	BudgetCategoryID uint
+	BudgetCategory   BudgetCategory
 }

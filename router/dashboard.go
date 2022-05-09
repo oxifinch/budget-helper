@@ -12,9 +12,10 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 		AppTitle        string
 		PageTitle       string
 		Budget          *database.Budget
-		Categories      []*database.Category
+		Categories      []database.Category
 		BudgetRemaining float32
 		BufferRemaining float32
+		PercentageSpent int
 	}{
 		AppTitle:  AppTitle,
 		PageTitle: "Dashboard",
@@ -37,8 +38,9 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 			totalSpent += p.Amount
 		}
 	}
+	data.PercentageSpent = int((totalSpent / totalAllocated) * 100)
 	data.BudgetRemaining = totalAllocated - totalSpent
-	// TODO: BudgetRemaining should be calculated here.
+	// TODO: BufferRemaining should be calculated here.
 	// BufferRemaining = (Budget.Allocated - BudgetCategories.Allocated) - (Uncategorized payments + BudgetCategory deficits)
 
 	err = tmplDashboard.ExecuteTemplate(w, "base", data)
