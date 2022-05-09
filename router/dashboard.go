@@ -3,6 +3,7 @@ package router
 import (
 	"budget-helper/database"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -14,13 +15,13 @@ import (
 // -- DASHBOARD & MAIN APP ROUTES --
 func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	data := struct {
-		AppTitle        string
-		PageTitle       string
-		Budget          *database.Budget
-		Categories      []database.Category
-		BudgetRemaining float32
-		BufferRemaining float32
-		PercentageSpent int
+		AppTitle         string
+		PageTitle        string
+		Budget           *database.Budget
+		Categories       []database.Category
+		BalanceRemaining string
+		BufferRemaining  string
+		PercentageSpent  int
 	}{
 		AppTitle:  AppTitle,
 		PageTitle: "Dashboard",
@@ -59,8 +60,10 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 			totalSpent += p.Amount
 		}
 	}
-	data.PercentageSpent = int((totalSpent / totalAllocated) * 100)
-	data.BudgetRemaining = totalAllocated - totalSpent
+	if totalSpent > 0 {
+		data.PercentageSpent = int((totalSpent / totalAllocated) * 100)
+	}
+	data.BalanceRemaining = fmt.Sprintf("%.2f", (totalAllocated - totalSpent))
 	// TODO: BufferRemaining should be calculated here.
 	// BufferRemaining = (Budget.Allocated - BudgetCategories.Allocated) - (Uncategorized payments + BudgetCategory deficits)
 

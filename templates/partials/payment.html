@@ -1,8 +1,9 @@
 {{ range .Payments }}
    
 <div class="grid">
-    <u class="uayment-date">{{ .Date }}</u>
+    <u class="payment-date">{{ .Date }}</u>
     <!-- TODO: Add user currency here -->
+    <!-- TODO: Trim down amount to 2 decimal points -->
     <p class="payment-amount">-{{ .Amount }} CURRENCY</p>
     <small class="smallayment-note">{{ .Note }}</small>
     <p class="payment-category">{{ .BudgetCategory.Category.Name }}</p>
