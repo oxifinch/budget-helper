@@ -1,9 +1,6 @@
 {{define "body"}}
-    <header class="container">
-        <h3>Create a new budget</h3>
-    </header> 
-
     <div class="container">
+        <h3>Create a new budget</h3>
         <form action="/newBudgetSave" method="POST">
 
             <!-- DATE INPUTS -->
@@ -19,11 +16,35 @@
                 </label>
             </div>
 
+            <!-- TOTAL MONEY ALLOCATED -->
             <label for="allocated">
                 <!-- TODO: Should be preloaded from recurring costs and income -->
                 Total money allocated
                 <input type="number" name="allocated">
             </label>
+
+            <!-- CATEGORIES TO INCLUDE -->
+            <h3>Allocate money per category</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th scope="col"><b>Name</b></th>
+                        <th scope="col"><b>Allocated Amount</b></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ range .Categories }}
+                    <tr>
+                        <th scope="row">{{ .Name }}</th>
+                        <td>
+                            <input type="number" name="bc_allocated_{{ .ID }}">
+                        </td>
+                    </tr>
+                    {{end}}
+                </tbody>
+            </table>
+
+            <button type="submit">Confirm</button>
         </form>
     </div>
 {{end}}
