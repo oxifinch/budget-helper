@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 func (rt *Router) handlePaymentsBudget(w http.ResponseWriter, r *http.Request) {
@@ -45,10 +44,10 @@ func (rt *Router) handlePaymentSave(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate POST contents
-	bcID := strings.TrimSpace(r.PostFormValue("budget_category_id"))
-	date := strings.TrimSpace(r.PostFormValue("date"))
-	amount := strings.TrimSpace(r.PostFormValue("amount"))
-	note := strings.TrimSpace(r.PostFormValue("note"))
+	bcID := trimmedFormValue(r, "budget_category_id")
+	date := trimmedFormValue(r, "date")
+	amount := trimmedFormValue(r, "amount")
+	note := trimmedFormValue(r, "note")
 
 	// Convert ID and amount
 	bcIDInt, err := strconv.Atoi(bcID)

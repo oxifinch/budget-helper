@@ -61,6 +61,10 @@ func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, st
 	}
 }
 
+func trimmedFormValue(r *http.Request, key string) string {
+	return strings.TrimSpace(r.PostFormValue(key))
+}
+
 func nameAndPassValid(username string, password string) bool {
 	return strings.TrimSpace(username) != "" && strings.TrimSpace(password) != ""
 }
