@@ -13,8 +13,8 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 		PageTitle       string
 		Budget          *database.Budget
 		Categories      []database.Category
-		BudgetRemaining float32
-		BufferRemaining float32
+		BudgetRemaining float64
+		BufferRemaining float64
 		PercentageSpent int
 	}{
 		AppTitle:  AppTitle,
@@ -29,8 +29,8 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	}
 	data.Budget = b
 
-	var totalSpent float32
-	var totalAllocated float32
+	var totalSpent float64
+	var totalAllocated float64
 	for _, bc := range b.BudgetCategories {
 		totalAllocated += bc.Allocated
 

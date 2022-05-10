@@ -66,7 +66,7 @@ func (rt *Router) handlePaymentSave(w http.ResponseWriter, r *http.Request) {
 		Success: true,
 	}
 
-	_, err = rt.PaymentRepo.Create(date, float32(amountFloat), note, uint(bcIDInt))
+	_, err = rt.PaymentRepo.Create(date, amountFloat, note, uint(bcIDInt))
 	if err != nil {
 		data.Success = false
 		data.ErrorMessage = fmt.Sprintf("%v", err)
