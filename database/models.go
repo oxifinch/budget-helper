@@ -14,7 +14,7 @@ type Budget struct {
 	gorm.Model
 	StartDate        string
 	EndDate          string
-	Allocated        float32
+	Allocated        float64
 	Currency         string
 	UserID           uint
 	BudgetCategories []BudgetCategory
@@ -30,7 +30,7 @@ type Category struct {
 
 type BudgetCategory struct {
 	gorm.Model
-	Allocated  float32
+	Allocated  float64
 	CategoryID uint
 	BudgetID   uint
 	Category   Category
@@ -40,7 +40,7 @@ type BudgetCategory struct {
 type Payment struct {
 	gorm.Model
 	Date             string
-	Amount           float32
+	Amount           float64
 	Note             string
 	BudgetCategoryID uint
 	BudgetCategory   BudgetCategory

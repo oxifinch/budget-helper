@@ -21,7 +21,8 @@ var (
 
 // -- TEMPLATES: PARTIALS --
 var (
-	tmplPartPayment = addPartial("partials/payment.html")
+	tmplPartPayment          = addPartial("partials/payment.html")
+	tmplPartPaymentConfirmed = addPartial("partials/payment-confirmed.html")
 )
 
 const (
@@ -58,6 +59,10 @@ func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, st
 	if err != nil {
 		log.Fatalf("displayErrorPage: %v\n", err)
 	}
+}
+
+func trimmedFormValue(r *http.Request, key string) string {
+	return strings.TrimSpace(r.PostFormValue(key))
 }
 
 func nameAndPassValid(username string, password string) bool {

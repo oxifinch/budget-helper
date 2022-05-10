@@ -1,4 +1,5 @@
 {{define "body"}}
+<!-- TODO: Re-render this header when new payments are added! -->
 <header class="container">
     <small>{{ .Budget.StartDate }} - {{ .Budget.EndDate }}</small>
     <div id="dashboard-summary" class="grid">
@@ -7,6 +8,7 @@
             <small><em>Buffer: {{ .BufferRemaining }} {{ .Budget.Currency }}</em></small>
         </div>
         <div>
+            <!-- TODO: Add bars for individual categories as well -->
             <strong>{{ .PercentageSpent }}% spent</strong>
             <progress value="{{ .PercentageSpent }}" max="100"></progress>
         </div>
@@ -14,27 +16,86 @@
 </header>
 
 <div id="dashboard-content" class="container">
-    <h2>Transaction Log</h2>
-    <!-- DROP-DOWN FILTER LIST -->
-    <details role="list">
-        <summary aria-haspopup="listbox">Filter categories</summary>
-        <ul role="listbox">
-            <li>
-                <button>Show all</button>
-            </li>
-            {{range .Budget.BudgetCategories }}
-            <li>
-                <label>
-                    <input type="checkbox" checked>{{ .Category.Name }}
-                </label>
-            </li>
-            {{end}}
-        </ul>
-    </details>
+    <div class="grid">
+        <h2>Transaction Log</h2>
+
+        <!-- DROP-DOWN FILTER LIST -->
+        <details role="list">
+            <summary aria-haspopup="listbox">Filter categories</summary>
+            <ul role="listbox">
+                <li>
+                    <button>Show all</button>
+                </li>
+                {{range .Budget.BudgetCategories }}
+                <li>
+                    <label>
+                        <input type="checkbox" checked>{{ .Category.Name }}
+                    </label>
+                </li>
+                {{end}}
+            </ul>
+        </details>
+
+        <button data-target="modal-newpayment" onClick="toggleModal(event)">New Payment</button>
+    </div>
 
     <!-- LIST OF PAYMENTS -->
-    <div id="list-payments" hx-get="/payments?id={{ .Budget.ID }}" hx-trigger="load">
-
+    <div id="list-payments" hx-get="/payments/budget?id={{ .Budget.ID }}" hx-trigger="load">
     </div>
+
+    <!-- NEW PAYMENT MODAL -->
+    <dialog id="modal-newpayment">
+        <article>
+            <a href="#close" aria-label="Close" class="close" data-target="modal-newpayment" onClick="toggleModal(event)"></a>
+            <h3>New Payment</h3>
+            <!-- TODO: Paying without a category isn't supported yet. -->
+            <!-- <p>Select a category, or leave it blank to pay from the buffer.</p> -->
+            <p>Select a category and input the payment date and amount. Notes are optional.</p>
+
+            <form>
+                <select name="budget_category_id">
+                    <!-- TODO: Paying without a category isn't supported yet. -->
+                    <!-- <option value="0">No category</option> -->
+                    {{ range .Budget.BudgetCategories }}
+                    <option value="{{ .ID }}">{{ .Category.Name }}</option>
+                    {{end}}
+                </select>
+
+                <div class="grid">
+                    <label for="date">
+                        Date
+                        <input type="date" name="date" required>
+                    </label>
+
+                    <label for="amount">
+                        Amount
+                        <input type="number" name="amount" required>
+                    </label>
+                </div>
+
+                <label for="note">
+                    Note
+                    <input type="text" name="note">
+                </label>
+
+                <button hx-post="/paymentSave"
+                    hx-target="#newpayment-confirmation">Confirm</button>
+            </form>
+
+            <footer>
+                <p id="newpayment-confirmation" hx-trigger="click" hx-get="/payments/budget?id={{ .Budget.ID }}" hx-target="#something">
+
+                </p>
+
+                <a href="#cancel" 
+                    role="button"
+                    class="secondary"
+                    data-target="modal-newpayment"
+                    onClick="toggleModal(event)">
+                    Cancel
+                </a>
+            </footer>
+        </article>
+    </dialog>
 </div>
 {{end}}
