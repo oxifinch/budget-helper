@@ -3,7 +3,6 @@ package router
 import (
 	"log"
 	"net/http"
-	"strings"
 )
 
 // -- USERS & AUTHENTICATION --
@@ -28,8 +27,8 @@ func (rt *Router) handleLoginSave(w http.ResponseWriter, r *http.Request) {
 			"The resource you requested does not support the method used.")
 	}
 
-	username := strings.TrimSpace(r.PostFormValue("username"))
-	password := strings.TrimSpace(r.PostFormValue("password"))
+	username := trimmedFormValue(r, "username")
+	password := trimmedFormValue(r, "password")
 	if !nameAndPassValid(username, password) {
 		displayErrorPage(w, r, http.StatusBadRequest, "Bad Request",
 			"One or more fields was not submitted. Please try again.")
@@ -66,8 +65,8 @@ func (rt *Router) handleRegisterSave(w http.ResponseWriter, r *http.Request) {
 			"The resource you requested does not support the method used.")
 	}
 
-	username := strings.TrimSpace(r.PostFormValue("username"))
-	password := strings.TrimSpace(r.PostFormValue("password"))
+	username := trimmedFormValue(r, "username")
+	password := trimmedFormValue(r, "password")
 	if !nameAndPassValid(username, password) {
 		displayErrorPage(w, r, http.StatusBadRequest, "Bad Request",
 			"One or more fields was not submitted. Please try again.")

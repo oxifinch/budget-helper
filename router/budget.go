@@ -64,7 +64,7 @@ func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: Should a HTTP status 201 be sent here?
-	budgetID, err := rt.BudgetRepo.Create(postStartDate, postEndDate, float32(allocated))
+	budgetID, err := rt.BudgetRepo.Create(postStartDate, postEndDate, allocated)
 	if err != nil {
 		log.Fatalf("handleNewBudgetSave: %v\n", err)
 	}
@@ -86,7 +86,7 @@ func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
 			log.Fatalf("handleNewBudgetSave: %v\n", err)
 		}
 
-		_, err = rt.BudgetRepo.CreateBudgetCategory(budgetID, ctID, float32(allocated))
+		_, err = rt.BudgetRepo.CreateBudgetCategory(budgetID, ctID, allocated)
 		if err != nil {
 			log.Fatalf("handleNewBudgetSave: %v\n", err)
 		}
