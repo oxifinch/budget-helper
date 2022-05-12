@@ -39,13 +39,13 @@ func (rt *Router) handleNewBudget(w http.ResponseWriter, r *http.Request) {
 func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
 	// Validate POST
 	if r.Method != POST {
-		displayErrorPage(w, r, http.StatusMethodNotAllowed, "Method Not Allowed",
+		displayErrorPage(w, r, http.StatusMethodNotAllowed,
 			"The resource you requested does not support the method used.")
 	}
 
-	postAllocated := strings.TrimSpace(r.PostFormValue("allocated"))
-	postStartDate := strings.TrimSpace(r.PostFormValue("start_date"))
-	postEndDate := strings.TrimSpace(r.PostFormValue("end_date"))
+	postAllocated := trimmedFormValue(r, "allocated")
+	postStartDate := trimmedFormValue(r, "start_date")
+	postEndDate := trimmedFormValue(r, "end_date")
 
 	// Check and convert POST values
 	allocated, err := strconv.ParseFloat(postAllocated, 32)

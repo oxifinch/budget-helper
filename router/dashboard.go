@@ -30,11 +30,11 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	getBudgetID := strings.TrimSpace(r.URL.Query().Get("id"))
 	id, err := strconv.Atoi(getBudgetID)
 	if err != nil {
-		displayErrorPage(w, r, http.StatusBadRequest, "Bad Request",
+		displayErrorPage(w, r, http.StatusBadRequest,
 			"The ID of the resource you are trying to access was not included in the request. Check the URL and try again.")
 	}
 	if id < 1 {
-		displayErrorPage(w, r, http.StatusBadRequest, "Bad Request",
+		displayErrorPage(w, r, http.StatusBadRequest,
 			"The ID submitted in the request is invalid. Check the URL and try again.")
 	}
 
@@ -43,7 +43,7 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	b, err := rt.BudgetRepo.Get(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			displayErrorPage(w, r, http.StatusNotFound, "Not Found",
+			displayErrorPage(w, r, http.StatusNotFound,
 				"The resource you requested could not be found in our database. Check the request and try again.")
 		} else {
 			log.Fatalf("handleDashboard: %v\n", err)

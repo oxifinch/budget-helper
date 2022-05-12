@@ -22,7 +22,8 @@ func (b *BudgetRepo) Get(id int) (*database.Budget, error) {
 	return &budget, err
 }
 
-func (b *BudgetRepo) Create(startDate string, endDate string, allocated float64) (uint, error) {
+func (b *BudgetRepo) Create(startDate string, endDate string,
+	allocated float64) (uint, error) {
 
 	budget := database.Budget{
 		StartDate: startDate,
@@ -36,7 +37,8 @@ func (b *BudgetRepo) Create(startDate string, endDate string, allocated float64)
 	return budget.ID, err
 }
 
-func (b *BudgetRepo) CreateBudgetCategory(budgetID uint, categoryID uint, allocated float64) (uint, error) {
+func (b *BudgetRepo) CreateBudgetCategory(budgetID uint, categoryID uint,
+	allocated float64) (uint, error) {
 
 	bc := database.BudgetCategory{
 		BudgetID:   budgetID,

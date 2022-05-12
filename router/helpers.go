@@ -41,7 +41,7 @@ func addPartial(path string) *template.Template {
 	return template.Must(template.ParseFiles(fmt.Sprintf("./templates/%v", path)))
 }
 
-func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, statusMessage string, detailedMessage string) {
+func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, detailedMessage string) {
 	data := struct {
 		AppTitle        string
 		PageTitle       string
@@ -52,8 +52,26 @@ func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, st
 		AppTitle:        AppTitle,
 		PageTitle:       fmt.Sprint(statusCode),
 		StatusCode:      statusCode,
-		StatusMessage:   statusMessage,
 		DetailedMessage: detailedMessage,
+	}
+
+	// TODO: Add more messages here as they are implemented in the code.
+	switch statusCode {
+	case http.StatusBadRequest:
+		data.StatusMessage = "Bad Request"
+		break
+	case http.StatusMethodNotAllowed:
+		data.StatusMessage = "Method Not Allowed"
+		break
+	case http.StatusNotFound:
+		data.StatusMessage = "Not Found"
+		break
+	case http.StatusInternalServerError:
+		data.StatusMessage = "Internal Server Error"
+		break
+	default:
+		data.StatusMessage = "Somethign went wrong."
+		break
 	}
 
 	w.WriteHeader(statusCode)
