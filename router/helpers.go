@@ -12,11 +12,13 @@ import (
 
 // -- TEMPLATES: FULL PAGES --
 var (
-	tmplHome      = addTemplate("pages/home.html")
-	tmplError     = addTemplate("pages/error.html")
-	tmplLogin     = addTemplate("pages/login.html")
-	tmplRegister  = addTemplate("pages/register.html")
-	tmplDashboard = addTemplate("pages/dashboard.html")
+	tmplHome          = addTemplate("pages/home.html")
+	tmplError         = addTemplate("pages/error.html")
+	tmplLoginRequired = addTemplate("pages/loginrequired.html")
+	tmplLogin         = addTemplate("pages/login.html")
+	tmplRegister      = addTemplate("pages/register.html")
+	tmplDashboard     = addTemplate("pages/dashboard.html")
+	tmplNewBudget     = addTemplate("pages/newbudget.html")
 )
 
 // -- TEMPLATES: PARTIALS --
@@ -39,7 +41,7 @@ func addPartial(path string) *template.Template {
 	return template.Must(template.ParseFiles(fmt.Sprintf("./templates/%v", path)))
 }
 
-func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, statusMessage string, detailedMessage string) {
+func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, detailedMessage string) {
 	data := struct {
 		AppTitle        string
 		PageTitle       string
@@ -50,14 +52,48 @@ func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, st
 		AppTitle:        AppTitle,
 		PageTitle:       fmt.Sprint(statusCode),
 		StatusCode:      statusCode,
-		StatusMessage:   statusMessage,
 		DetailedMessage: detailedMessage,
+	}
+
+	// TODO: Add more messages here as they are implemented in the code.
+	switch statusCode {
+	case http.StatusBadRequest:
+		data.StatusMessage = "Bad Request"
+		break
+	case http.StatusMethodNotAllowed:
+		data.StatusMessage = "Method Not Allowed"
+		break
+	case http.StatusNotFound:
+		data.StatusMessage = "Not Found"
+		break
+	case http.StatusInternalServerError:
+		data.StatusMessage = "Internal Server Error"
+		break
+	default:
+		data.StatusMessage = "Somethign went wrong."
+		break
 	}
 
 	w.WriteHeader(statusCode)
 	err := tmplError.ExecuteTemplate(w, "base", data)
 	if err != nil {
 		log.Fatalf("displayErrorPage: %v\n", err)
+	}
+}
+
+func displayLoginRequired(w http.ResponseWriter, r *http.Request) {
+	data := struct {
+		AppTitle  string
+		PageTitle string
+	}{
+		AppTitle:  AppTitle,
+		PageTitle: "Login Required",
+	}
+
+	w.WriteHeader(http.StatusUnauthorized)
+	err := tmplLoginRequired.ExecuteTemplate(w, "base", data)
+	if err != nil {
+		log.Fatalf("displayLoginRequired: %v\n", err)
 	}
 }
 

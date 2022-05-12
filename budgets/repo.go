@@ -17,7 +17,36 @@ func (b *BudgetRepo) Get(id int) (*database.Budget, error) {
 
 	err := b.db.Preload("BudgetCategories.Category").
 		Preload("BudgetCategories.Payments").
-		Find(&budget, 1).Error
+		First(&budget, id).Error
 
 	return &budget, err
+}
+
+func (b *BudgetRepo) Create(startDate string, endDate string,
+	allocated float64) (uint, error) {
+
+	budget := database.Budget{
+		StartDate: startDate,
+		EndDate:   endDate,
+		Allocated: allocated,
+		// Currency:  "SEK", // TODO: Currency should be set on the User instead of budget
+	}
+
+	err := b.db.Create(&budget).Error
+
+	return budget.ID, err
+}
+
+func (b *BudgetRepo) CreateBudgetCategory(budgetID uint, categoryID uint,
+	allocated float64) (uint, error) {
+
+	bc := database.BudgetCategory{
+		BudgetID:   budgetID,
+		CategoryID: categoryID,
+		Allocated:  allocated,
+	}
+
+	err := b.db.Create(&bc).Error
+
+	return bc.ID, err
 }

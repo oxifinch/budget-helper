@@ -15,7 +15,7 @@ func (rt *Router) handlePaymentsBudget(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if id < 1 {
-		displayErrorPage(w, r, http.StatusBadRequest, "Bad Request",
+		displayErrorPage(w, r, http.StatusBadRequest,
 			"The request included an invalid resource ID. Check the URL and try again.")
 	}
 
@@ -39,7 +39,7 @@ func (rt *Router) handlePaymentsBudget(w http.ResponseWriter, r *http.Request) {
 
 func (rt *Router) handlePaymentSave(w http.ResponseWriter, r *http.Request) {
 	if r.Method != POST {
-		displayErrorPage(w, r, http.StatusMethodNotAllowed, "Method Not Allowed",
+		displayErrorPage(w, r, http.StatusMethodNotAllowed,
 			"The resource you requested does not support the method used.")
 	}
 

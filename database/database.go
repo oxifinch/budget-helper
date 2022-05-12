@@ -50,10 +50,10 @@ func (db *Database) Seed() {
 	}
 
 	newBudgets := []Budget{
-		{StartDate: "2022-04-25", EndDate: "2022-05-25", Allocated: 11500.00, Currency: "SEK", UserID: 1},
-		{StartDate: "2022-03-28", EndDate: "2022-04-24", Allocated: 11500.00, Currency: "SEK", UserID: 1},
-		{StartDate: "2022-03-28", EndDate: "2022-04-24", Allocated: 9250.99, Currency: "SEK", UserID: 2},
-		{StartDate: "2022-05-10", EndDate: "2022-06-10", Allocated: 15000.00, Currency: "SEK", UserID: 3},
+		{StartDate: "2022-04-25", EndDate: "2022-05-25", Allocated: 11500.00, UserID: 1},
+		{StartDate: "2022-03-28", EndDate: "2022-04-24", Allocated: 11500.00, UserID: 1},
+		{StartDate: "2022-03-28", EndDate: "2022-04-24", Allocated: 9250.99, UserID: 2},
+		{StartDate: "2022-05-10", EndDate: "2022-06-10", Allocated: 15000.00, UserID: 3},
 	}
 	for _, b := range newBudgets {
 		err := db.Create(&b).Error
