@@ -27,6 +27,7 @@ type Category struct {
 	Description string
 	Color       string
 	UserID      uint
+	User        User
 }
 
 type BudgetCategory struct {

@@ -8,6 +8,12 @@ import (
 	"strconv"
 )
 
+// ----------------------------------------------------------------------------------
+// Payments can be retrieved from several sources. All payments from a specific User,
+// a single Budget, a single BudgetCategory, or all payments across a global Category
+// on a User account.
+// ----------------------------------------------------------------------------------
+// Get all payments from a specific Budget
 func (rt *Router) handlePaymentsBudget(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
@@ -22,6 +28,36 @@ func (rt *Router) handlePaymentsBudget(w http.ResponseWriter, r *http.Request) {
 	ps, err := rt.PaymentRepo.GetAllByBudgetID(uint(id))
 	if err != nil {
 		log.Fatalf("handlePaymentsBudget: %v\n", err)
+	}
+
+	data := struct {
+		Payments []database.Payment
+	}{
+		Payments: ps,
+	}
+
+	err = tmplPartPayment.Execute(w, data)
+	if err != nil {
+		log.Fatalf("handlePaymentsBudget: %v\n", err)
+	}
+
+}
+
+// Get all payments from the User account.
+func (rt *Router) handlePaymentsUser(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		log.Fatalf("handlePaymentsUser: %v\n", err)
+	}
+
+	if id < 1 {
+		displayErrorPage(w, r, http.StatusBadRequest,
+			"The request included an invalid resource ID. Check the URL and try again.")
+	}
+
+	ps, err := rt.PaymentRepo.GetAllByUserID(uint(id))
+	if err != nil {
+		log.Fatalf("handlePaymentsUser: %v\n", err)
 	}
 
 	data := struct {
