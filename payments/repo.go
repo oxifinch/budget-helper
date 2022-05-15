@@ -45,6 +45,27 @@ func (p *PaymentRepo) GetAllByBudgetCategoryID(id uint) ([]database.Payment, err
 	return payments, err
 }
 
+func (p *PaymentRepo) GetAllByCategoryID(id uint) ([]database.Payment, error) {
+	var payments []database.Payment
+
+	// TODO: Couldn't figure out how to properly filter by Category.ID, redo
+	// this later.
+	err := p.db.
+		Preload("BudgetCategory.Category").
+		Preload("BudgetCategory.Category.User").
+		Order("date desc").
+		Find(&payments).Error
+
+	var filteredPayments []database.Payment
+	for _, p := range payments {
+		if p.BudgetCategory.Category.ID == id {
+			filteredPayments = append(filteredPayments, p)
+		}
+	}
+
+	return filteredPayments, err
+}
+
 func (p *PaymentRepo) GetAllByUserID(id uint) ([]database.Payment, error) {
 	var payments []database.Payment
 
