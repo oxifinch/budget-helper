@@ -108,9 +108,9 @@ func (db *Database) Seed() {
 	}
 
 	newIncomeExpenses := []IncomeExpense{
-		{Label: "Salary", Day: 25, Amount: 12500, UserID: 1},
-		{Label: "Netflix", Day: 20, Amount: -199, UserID: 1},
-		{Label: "Spotify", Day: 20, Amount: -199, UserID: 1},
+		{Label: "Salary", Day: 25, Amount: 12500, UserID: 1, Enabled: true},
+		{Label: "Netflix", Day: 20, Amount: -199, UserID: 1, Enabled: false},
+		{Label: "Spotify", Day: 20, Amount: -199, UserID: 1, Enabled: true},
 	}
 	for _, ie := range newIncomeExpenses {
 		err := db.Create(&ie).Error

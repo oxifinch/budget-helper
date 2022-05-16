@@ -17,14 +17,17 @@ var (
 	tmplLoginRequired = addTemplate("pages/loginrequired.html")
 	tmplLogin         = addTemplate("pages/login.html")
 	tmplRegister      = addTemplate("pages/register.html")
+	tmplSettings      = addTemplate("pages/settings.html")
 	tmplDashboard     = addTemplate("pages/dashboard.html")
 	tmplNewBudget     = addTemplate("pages/newbudget.html")
 )
 
 // -- TEMPLATES: PARTIALS --
 var (
-	tmplPartPayment          = addPartial("partials/payment.html")
-	tmplPartPaymentConfirmed = addPartial("partials/payment-confirmed.html")
+	tmplPartPayment                = addPartial("partials/payment.html")
+	tmplPartPaymentConfirmed       = addPartial("partials/payment-confirmed.html")
+	tmplPartSettingsAccount        = addPartial("partials/settings-account.html")
+	tmplPartSettingsIncomeExpenses = addPartial("partials/settings-incomeexpenses.html")
 )
 
 const (

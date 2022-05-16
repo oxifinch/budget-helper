@@ -1,8 +1,10 @@
 package router
 
 import (
+	"budget-helper/database"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 // -- USERS & AUTHENTICATION --
@@ -78,4 +80,72 @@ func (rt *Router) handleRegisterSave(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/newBudget", http.StatusSeeOther)
+}
+
+func (rt *Router) handleSettings(w http.ResponseWriter, r *http.Request) {
+	// TODO: Check that user is auhenticated. Use UserID 1 for now.
+	id := 1
+
+	user, err := rt.UserRepo.Get(id)
+	if err != nil {
+		log.Fatalf("handleSettings: %v\n", err)
+	}
+
+	data := struct {
+		AppTitle  string
+		PageTitle string
+		User      *database.User
+	}{
+		AppTitle:  AppTitle,
+		PageTitle: "Settings",
+		User:      user,
+	}
+
+	err = tmplSettings.ExecuteTemplate(w, "base", data)
+	if err != nil {
+		log.Fatalf("handleSettings: %v\n", err)
+	}
+
+}
+
+func (rt *Router) handleSettingsAccount(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		log.Fatalf("handlePaymentsBudget: %v\n", err)
+	}
+
+	if id < 1 {
+		displayErrorPage(w, r, http.StatusBadRequest,
+			"The request included an invalid resource ID. Check the URL and try again.")
+	}
+
+	// user, err := rt.UserRepo.Get(id)
+	// if err != nil {
+	// 	log.Fatal("handleSettingsAccount: %v\n", err)
+	// }
+
+	err = tmplPartSettingsAccount.Execute(w, nil)
+	if err != nil {
+		log.Fatalf("handleSettingsAccount: %v\n", err)
+	}
+}
+
+func (rt *Router) handleSettingsIncomeExpenses(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		log.Fatalf("handlePaymentsBudget: %v\n", err)
+	}
+
+	if id < 1 {
+		displayErrorPage(w, r, http.StatusBadRequest,
+			"The request included an invalid resource ID. Check the URL and try again.")
+	}
+
+	ies, err := rt.IncomeExpenseRepo.GetAllWithUserID(uint(id))
+	if err != nil {
+		log.Fatalf("handleSettingsIncomeExpenses: %v\n", err)
+	}
+
+	err = tmplPartSettingsIncomeExpenses.Execute(w, ies)
+
 }

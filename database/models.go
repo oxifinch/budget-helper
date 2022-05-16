@@ -60,9 +60,10 @@ type Payment struct {
 
 type IncomeExpense struct {
 	gorm.Model
-	Label  string
-	Day    uint
-	Amount float64
-	UserID uint
-	User   User
+	Label   string
+	Day     uint
+	Amount  float64
+	Enabled bool
+	UserID  uint
+	User    User
 }

@@ -1,0 +1,41 @@
+<h3>Settings: Income &amp; Expenses</h3>
+<div class="settings-tab-incomeexpenses">
+    <form action="/settingsSave/incomeexpenses" method="POST">
+        <table>
+
+            <thead>
+                <tr>
+                    <th scope="col"><b>Enabled</b></th>
+                    <th scope="col"><b>Label</b></th>
+                    <th scope="col"><b>Day of Payment</b></th>
+                    <th scope="col"><b>Amount</b></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {{ range .}}
+                <tr>
+                    <td>
+                        <input type="checkbox" name="ie_{{ .ID }}_enabled" {{ if .Enabled }} checked {{end}}>
+                    </td>
+
+                    <td>
+                        <input type="text" name="ie_{{ .ID }}_label" value="{{ .Label }}">
+                    </td>
+
+                    <td>
+                        <input type="number" name="ie_{{ .ID }}_day" min="1" max="31" value="{{ .Day }}">
+                    </td>
+
+                    <td>
+                        <input type="number" name="id_{{ .ID }}_amount" step=".01" value="{{ .Amount }}">
+                    </td>
+
+                </tr>
+                {{end}}
+            </tbody>
+
+        </table>
+        <button type="submit">Save</button>
+    </form>
+</div>

@@ -1,0 +1,25 @@
+{{define "body"}}
+    <div class="container">
+        <a href="/dashboard">Back to dashboard</a>
+        <p><strong>User settings for: </strong>{{ .User.Username }}</p>
+    </div>
+
+    <div class="container">
+        <div class="grid">
+            <button 
+                hx-get="/settings/account?id={{ .User.ID }}" 
+                hx-target="#settings-container"
+                >Account</button>
+
+            <button 
+                hx-get="/settings/incomeexpenses?id={{ .User.ID }}" 
+                hx-target="#settings-container"
+                >Income &amp; Expenses</button>
+        </div>
+        <div id="settings-container" class="container" 
+            hx-get="/settings/account?id={{ .User.ID }}" 
+            hx-trigger="load">
+            
+        </div>
+    </div>
+{{end}}
