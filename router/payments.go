@@ -24,12 +24,12 @@ func (rt *Router) handlePaymentsBudget(w http.ResponseWriter, r *http.Request) {
 			"The request included an invalid resource ID. Check the URL and try again.")
 	}
 
-	Payments, err := rt.PaymentRepo.GetAllByBudgetID(uint(id))
+	ps, err := rt.PaymentRepo.GetAllByBudgetID(uint(id))
 	if err != nil {
 		log.Fatalf("handlePaymentsBudget: %v\n", err)
 	}
 
-	err = tmplPartPayment.Execute(w, Payments)
+	err = tmplPartPayment.Execute(w, ps)
 	if err != nil {
 		log.Fatalf("handlePaymentsBudget: %v\n", err)
 	}
@@ -48,12 +48,12 @@ func (rt *Router) handlePaymentsBudgetCategory(w http.ResponseWriter, r *http.Re
 			"The request included an invalid resource ID. Check the URL and try again.")
 	}
 
-	Payments, err := rt.PaymentRepo.GetAllByBudgetCategoryID(uint(id))
+	ps, err := rt.PaymentRepo.GetAllByBudgetCategoryID(uint(id))
 	if err != nil {
 		log.Fatalf("handlePaymentsBudgetCategory: %v\n", err)
 	}
 
-	err = tmplPartPayment.Execute(w, Payments)
+	err = tmplPartPayment.Execute(w, ps)
 	if err != nil {
 		log.Fatalf("handlePaymentsBudgetCategory: %v\n", err)
 	}
@@ -72,12 +72,12 @@ func (rt *Router) handlePaymentsCategory(w http.ResponseWriter, r *http.Request)
 			"The request included an invalid resource ID. Check the URL and try again.")
 	}
 
-	Payments, err := rt.PaymentRepo.GetAllByCategoryID(uint(id))
+	ps, err := rt.PaymentRepo.GetAllByCategoryID(uint(id))
 	// if err != nil {
 	// 	log.Fatalf("handlePaymentsCategory: %v\n", err)
 	// }
 
-	err = tmplPartPayment.Execute(w, Payments)
+	err = tmplPartPayment.Execute(w, ps)
 	if err != nil {
 		log.Fatalf("handlePaymentsCategory: %v\n", err)
 	}
@@ -96,12 +96,12 @@ func (rt *Router) handlePaymentsUser(w http.ResponseWriter, r *http.Request) {
 			"The request included an invalid resource ID. Check the URL and try again.")
 	}
 
-	Payments, err := rt.PaymentRepo.GetAllByUserID(uint(id))
+	ps, err := rt.PaymentRepo.GetAllByUserID(uint(id))
 	if err != nil {
 		log.Fatalf("handlePaymentsUser: %v\n", err)
 	}
 
-	err = tmplPartPayment.Execute(w, Payments)
+	err = tmplPartPayment.Execute(w, ps)
 	if err != nil {
 		log.Fatalf("handlePaymentsUser: %v\n", err)
 	}
