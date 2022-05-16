@@ -2,12 +2,21 @@ package database
 
 import "gorm.io/gorm"
 
+type Currency uint
+
+const (
+	UnknownCurrency Currency = iota
+	USD
+	EUR
+	SEK
+)
+
 type User struct {
 	gorm.Model
 	Username       string
 	Password       string
 	ActiveBudgetID uint
-	Currency       string
+	Currency       Currency
 	Budgets        []Budget
 	Categories     []Category
 }
