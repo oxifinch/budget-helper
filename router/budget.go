@@ -20,14 +20,24 @@ func (rt *Router) handleNewBudget(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("handleNewBudget: %v\n", err)
 	}
 
+	ies, err := rt.IncomeExpenseRepo.GetAllWithUserID(1)
+	if err != nil {
+		log.Fatalf("handleNewBudget: %v\n", err)
+	}
+
 	data := struct {
-		AppTitle   string
-		PageTitle  string
-		Categories []database.Category
+		AppTitle         string
+		PageTitle        string
+		Categories       []database.Category
+		DefaultAllocated float64
 	}{
 		AppTitle:   AppTitle,
 		PageTitle:  "New Budget",
 		Categories: categories,
+	}
+
+	for _, ie := range ies {
+		data.DefaultAllocated += ie.Amount
 	}
 
 	err = tmplNewBudget.ExecuteTemplate(w, "base", data)

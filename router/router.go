@@ -3,29 +3,33 @@ package router
 import (
 	"budget-helper/budgets"
 	"budget-helper/categories"
+	"budget-helper/incomeexpenses"
 	"budget-helper/payments"
 	"budget-helper/users"
 	"net/http"
 )
 
 type Router struct {
-	Handler      *http.ServeMux
-	UserRepo     *users.UserRepo
-	BudgetRepo   *budgets.BudgetRepo
-	CategoryRepo *categories.CategoryRepo
-	PaymentRepo  *payments.PaymentRepo
+	Handler           *http.ServeMux
+	UserRepo          *users.UserRepo
+	BudgetRepo        *budgets.BudgetRepo
+	CategoryRepo      *categories.CategoryRepo
+	PaymentRepo       *payments.PaymentRepo
+	IncomeExpenseRepo *incomeexpenses.IncomeExpenseRepo
 }
 
 func NewRouter(u *users.UserRepo, b *budgets.BudgetRepo,
-	c *categories.CategoryRepo, p *payments.PaymentRepo) *Router {
+	c *categories.CategoryRepo, p *payments.PaymentRepo,
+	i *incomeexpenses.IncomeExpenseRepo) *Router {
 	h := http.NewServeMux()
 
 	return &Router{
-		Handler:      h,
-		UserRepo:     u,
-		BudgetRepo:   b,
-		CategoryRepo: c,
-		PaymentRepo:  p,
+		Handler:           h,
+		UserRepo:          u,
+		BudgetRepo:        b,
+		CategoryRepo:      c,
+		PaymentRepo:       p,
+		IncomeExpenseRepo: i,
 	}
 }
 
