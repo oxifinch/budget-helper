@@ -73,9 +73,9 @@ func (rt *Router) handlePaymentsCategory(w http.ResponseWriter, r *http.Request)
 	}
 
 	Payments, err := rt.PaymentRepo.GetAllByCategoryID(uint(id))
-	if err != nil {
-		log.Fatalf("handlePaymentsCategory: %v\n", err)
-	}
+	// if err != nil {
+	// 	log.Fatalf("handlePaymentsCategory: %v\n", err)
+	// }
 
 	err = tmplPartPayment.Execute(w, Payments)
 	if err != nil {

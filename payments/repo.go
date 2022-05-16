@@ -23,7 +23,8 @@ func (p *PaymentRepo) Get(id uint) (*database.Payment, error) {
 func (p *PaymentRepo) GetAllByBudgetID(id uint) ([]database.Payment, error) {
 	var payments []database.Payment
 
-	err := p.db.Joins("BudgetCategory").
+	err := p.db.
+		Joins("BudgetCategory").
 		Preload("BudgetCategory.Category").
 		Where("budget_id", id).
 		Order("date desc").
@@ -48,49 +49,34 @@ func (p *PaymentRepo) GetAllByBudgetCategoryID(id uint) ([]database.Payment, err
 func (p *PaymentRepo) GetAllByCategoryID(id uint) ([]database.Payment, error) {
 	var payments []database.Payment
 
-	// TODO: Couldn't figure out how to properly filter by Category.ID, redo
-	// this later.
 	err := p.db.
+		Joins("JOIN budget_categories ON payments.budget_category_id = budget_categories.id").
+		Joins("JOIN categories ON budget_categories.category_id = categories.id").
+		Where("categories.id = ?", id).
+		Group("payments.id").
+		Preload("BudgetCategory").
 		Preload("BudgetCategory.Category").
 		Preload("BudgetCategory.Category.User").
-		Order("date desc").
 		Find(&payments).Error
 
-	var filteredPayments []database.Payment
-	for _, p := range payments {
-		if p.BudgetCategory.Category.ID == id {
-			filteredPayments = append(filteredPayments, p)
-		}
-	}
-
-	return filteredPayments, err
+	return payments, err
 }
 
 func (p *PaymentRepo) GetAllByUserID(id uint) ([]database.Payment, error) {
 	var payments []database.Payment
 
-	// TODO: How do I filter out by BudgetCategory.Category.UserID = id in the query?
-	// This solution doesn't work, it just select all payments regardless of UserID.
 	err := p.db.
+		Joins("JOIN budget_categories ON payments.budget_category_id = budget_categories.id").
+		Joins("JOIN categories ON budget_categories.category_id = categories.id").
+		Joins("JOIN users ON categories.user_id = users.id").
+		Where("users.id = ?", id).
+		Group("payments.id").
+		Preload("BudgetCategory").
 		Preload("BudgetCategory.Category").
 		Preload("BudgetCategory.Category.User").
-		Where(&database.BudgetCategory{
-			Category: database.Category{
-				UserID: id,
-			},
-		}).
-		Order("date desc").
 		Find(&payments).Error
 
-	// Instead, this awfully inefficient solution works, for now.
-	var filteredPayments []database.Payment
-	for _, p := range payments {
-		if p.BudgetCategory.Category.UserID == id {
-			filteredPayments = append(filteredPayments, p)
-		}
-	}
-
-	return filteredPayments, err
+	return payments, err
 }
 
 func (p *PaymentRepo) Create(date string, amount float64, note string, budgetCategoryID uint) (uint, error) {
