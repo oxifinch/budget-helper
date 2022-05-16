@@ -46,9 +46,9 @@ func (db *Database) Seed() {
 	db.Exec("DELETE FROM income_expenses")
 
 	newUsers := []User{
-		{Username: "joseph", Password: "secret01"},
-		{Username: "jean-paul", Password: "secret02"},
-		{Username: "bubby", Password: "secret03"},
+		{Username: "joseph", Password: "secret01", Currency: SEK},
+		{Username: "jean-paul", Password: "secret02", Currency: EUR},
+		{Username: "bubby", Password: "secret03", Currency: USD},
 	}
 	for _, u := range newUsers {
 		err := db.Create(&u).Error
