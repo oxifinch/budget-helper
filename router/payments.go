@@ -1,13 +1,18 @@
 package router
 
 import (
-	"budget-helper/database"
 	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 )
 
+// ----------------------------------------------------------------------------------
+// Payments can be retrieved from several sources. All payments from a specific User,
+// a single Budget, a single BudgetCategory, or all payments across a global Category
+// on a User account.
+// ----------------------------------------------------------------------------------
+// Get all payments from a specific Budget.
 func (rt *Router) handlePaymentsBudget(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
@@ -24,15 +29,81 @@ func (rt *Router) handlePaymentsBudget(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("handlePaymentsBudget: %v\n", err)
 	}
 
-	data := struct {
-		Payments []database.Payment
-	}{
-		Payments: ps,
-	}
-
-	err = tmplPartPayment.Execute(w, data)
+	err = tmplPartPayment.Execute(w, ps)
 	if err != nil {
 		log.Fatalf("handlePaymentsBudget: %v\n", err)
+	}
+
+}
+
+// Get all payments from a BudgetCategory.
+func (rt *Router) handlePaymentsBudgetCategory(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		log.Fatalf("handlePaymentsBudgetCategory: %v\n", err)
+	}
+
+	if id < 1 {
+		displayErrorPage(w, r, http.StatusBadRequest,
+			"The request included an invalid resource ID. Check the URL and try again.")
+	}
+
+	ps, err := rt.PaymentRepo.GetAllByBudgetCategoryID(uint(id))
+	if err != nil {
+		log.Fatalf("handlePaymentsBudgetCategory: %v\n", err)
+	}
+
+	err = tmplPartPayment.Execute(w, ps)
+	if err != nil {
+		log.Fatalf("handlePaymentsBudgetCategory: %v\n", err)
+	}
+
+}
+
+// Get all payments from a User's category across all their Budgets.
+func (rt *Router) handlePaymentsCategory(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		log.Fatalf("handlePaymentsCategory: %v\n", err)
+	}
+
+	if id < 1 {
+		displayErrorPage(w, r, http.StatusBadRequest,
+			"The request included an invalid resource ID. Check the URL and try again.")
+	}
+
+	ps, err := rt.PaymentRepo.GetAllByCategoryID(uint(id))
+	// if err != nil {
+	// 	log.Fatalf("handlePaymentsCategory: %v\n", err)
+	// }
+
+	err = tmplPartPayment.Execute(w, ps)
+	if err != nil {
+		log.Fatalf("handlePaymentsCategory: %v\n", err)
+	}
+
+}
+
+// Get all payments from the User account.
+func (rt *Router) handlePaymentsUser(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		log.Fatalf("handlePaymentsUser: %v\n", err)
+	}
+
+	if id < 1 {
+		displayErrorPage(w, r, http.StatusBadRequest,
+			"The request included an invalid resource ID. Check the URL and try again.")
+	}
+
+	ps, err := rt.PaymentRepo.GetAllByUserID(uint(id))
+	if err != nil {
+		log.Fatalf("handlePaymentsUser: %v\n", err)
+	}
+
+	err = tmplPartPayment.Execute(w, ps)
+	if err != nil {
+		log.Fatalf("handlePaymentsUser: %v\n", err)
 	}
 
 }
