@@ -119,11 +119,6 @@ func (rt *Router) handleSettingsAccount(w http.ResponseWriter, r *http.Request) 
 			"The request included an invalid resource ID. Check the URL and try again.")
 	}
 
-	// user, err := rt.UserRepo.Get(id)
-	// if err != nil {
-	// 	log.Fatal("handleSettingsAccount: %v\n", err)
-	// }
-
 	err = tmplPartSettingsAccount.Execute(w, nil)
 	if err != nil {
 		log.Fatalf("handleSettingsAccount: %v\n", err)
@@ -147,5 +142,4 @@ func (rt *Router) handleSettingsIncomeExpenses(w http.ResponseWriter, r *http.Re
 	}
 
 	err = tmplPartSettingsIncomeExpenses.Execute(w, ies)
-
 }

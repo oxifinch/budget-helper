@@ -1,6 +1,7 @@
 <h3>Settings: Income &amp; Expenses</h3>
 <div class="settings-tab-incomeexpenses">
-    <form action="/settingsSave/incomeexpenses" method="POST">
+    {{ range . }}
+    <form>
         <table>
 
             <thead>
@@ -13,29 +14,33 @@
             </thead>
 
             <tbody>
-                {{ range .}}
                 <tr>
+                    <input type="hidden" name="id" value="{{ .ID }}" required>
                     <td>
-                        <input type="checkbox" name="ie_{{ .ID }}_enabled" {{ if .Enabled }} checked {{end}}>
+                        <input type="checkbox" name="enabled" {{ if .Enabled }} checked {{end}}>
                     </td>
 
                     <td>
-                        <input type="text" name="ie_{{ .ID }}_label" value="{{ .Label }}">
+                        <input type="text" name="label" value="{{ .Label }}" required>
                     </td>
 
                     <td>
-                        <input type="number" name="ie_{{ .ID }}_day" min="1" max="31" value="{{ .Day }}">
+                        <input type="number" name="day" min="1" max="31" value="{{ .Day }}" required>
                     </td>
 
                     <td>
-                        <input type="number" name="id_{{ .ID }}_amount" step=".01" value="{{ .Amount }}">
+                        <input type="number" name="amount" step=".01" value="{{ .Amount }}" required>
                     </td>
-
+                    <td>
+                        <button hx-post="/incomeexpensesUpdate" hx-target="#status_{{ .ID }}">Save</button>
+                    </td>
+                    <td id="status_{{ .ID }}">
+                        OK?
+                    </td>
                 </tr>
-                {{end}}
             </tbody>
-
         </table>
-        <button type="submit">Save</button>
+        <!-- <button type="submit">Save</button> -->
     </form>
+    {{end}}
 </div>
