@@ -61,5 +61,6 @@ func (rt *Router) RegisterRoutes() {
 	rt.Handler.HandleFunc("/paymentSave", rt.handlePaymentSave)
 
 	// - Income and expenses management -
+	rt.Handler.HandleFunc("/incomeexpensesCreate", rt.handleIncomeExpensesCreate)
 	rt.Handler.HandleFunc("/incomeexpensesUpdate", rt.handleIncomeExpensesUpdate)
 }

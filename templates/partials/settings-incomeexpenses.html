@@ -1,4 +1,57 @@
 <h3>Settings: Income &amp; Expenses</h3>
+
+<dialog id="modal-newincomeexpense">
+    <article>
+        <h3>Add new recurring payment</h3>
+        <p>Positive values represent a recurring income, negative amounts represent expenses.</p>
+
+        <form>
+            <label for="label">
+                Label
+                <input type="text" name="label">
+            </label> 
+            <div class="grid">
+                <label for="day">
+                    Day
+                    <input type="number" name="day" min="1" max="31" required>
+                </label>
+
+                <label for="amount">
+                    Amount
+                    <input type="number" name="amount" step=".01" required>
+                </label>
+            </div>
+
+            <button 
+                type="submit"
+                hx-post="/incomeexpensesCreate"
+                hx-target="#newincomeexpense-status"
+                >
+                Submit</button>
+        </form>
+
+        <footer>
+            <a href="#cancel" 
+                role="button" 
+                data-target="modal-newincomeexpense"
+                onClick="toggleModal(event)"
+                class="secondary">
+                Cancel
+            </a>
+            <p id="newincomeexpense-status">
+
+            </p>
+        </footer>
+    </article>
+</dialog>
+
+<button 
+    class="outline"
+    data-target="modal-newincomeexpense"
+    onClick="toggleModal(event)">
+    Add New
+</button>
+<!-- TODO: Load this list from a request separately -->
 <div class="settings-tab-incomeexpenses">
     {{ range . }}
     <form>
@@ -8,7 +61,7 @@
                 <tr>
                     <th scope="col"><b>Enabled</b></th>
                     <th scope="col"><b>Label</b></th>
-                    <th scope="col"><b>Day of Payment</b></th>
+                    <th scope="col"><b>Day</b></th>
                     <th scope="col"><b>Amount</b></th>
                 </tr>
             </thead>
@@ -32,15 +85,23 @@
                         <input type="number" name="amount" step=".01" value="{{ .Amount }}" required>
                     </td>
                     <td>
-                        <button hx-post="/incomeexpensesUpdate" hx-target="#status_{{ .ID }}">Save</button>
+                        <button 
+                            class="secondary outline"
+                            hx-post="/incomeexpensesUpdate">
+                            Save&nbsp;</button>
                     </td>
-                    <td id="status_{{ .ID }}">
-                        OK?
+                    <td>
+                        <!-- TODO: Use stylesheet instead of inline styling -->
+                        <button
+                            style="color: #ff0000; border-color: #ff0000;"
+                            class="secondary outline"
+                            hx-delete="/incomeexpensesDelete?id={{ .ID }}">
+                            Delete
+                        </button>
                     </td>
                 </tr>
             </tbody>
         </table>
-        <!-- <button type="submit">Save</button> -->
     </form>
     {{end}}
 </div>
