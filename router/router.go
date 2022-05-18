@@ -63,4 +63,5 @@ func (rt *Router) RegisterRoutes() {
 	// - Income and expenses management -
 	rt.Handler.HandleFunc("/incomeexpensesCreate", rt.handleIncomeExpensesCreate)
 	rt.Handler.HandleFunc("/incomeexpensesUpdate", rt.handleIncomeExpensesUpdate)
+	rt.Handler.HandleFunc("/incomeexpensesDelete", rt.handleIncomeExpensesDelete)
 }

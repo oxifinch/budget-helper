@@ -6,6 +6,7 @@
         <p>Positive values represent a recurring income, negative amounts represent expenses.</p>
 
         <form>
+            <input type="hidden" name="id" value="{{ .UserID }}" required>
             <label for="label">
                 Label
                 <input type="text" name="label">
@@ -53,7 +54,7 @@
 </button>
 <!-- TODO: Load this list from a request separately -->
 <div class="settings-tab-incomeexpenses">
-    {{ range . }}
+    {{ range .IncomeExpenses }}
     <form>
         <table>
 

@@ -30,8 +30,9 @@ func (i *IncomeExpenseRepo) GetAllWithUserID(id uint) ([]database.IncomeExpense,
 	return incomeExpenses, err
 }
 
-func (i *IncomeExpenseRepo) Create(label string, day uint, amount float64) (uint, error) {
+func (i *IncomeExpenseRepo) Create(userID uint, label string, day uint, amount float64) (uint, error) {
 	ie := database.IncomeExpense{
+		UserID: userID,
 		Label:  label,
 		Day:    day,
 		Amount: amount,
@@ -57,6 +58,12 @@ func (i *IncomeExpenseRepo) Update(id uint, label string, day uint, amount float
 	ie.Day = day
 	ie.Amount = amount
 	i.db.Save(&ie)
+
+	return err
+}
+
+func (i *IncomeExpenseRepo) Delete(id uint) error {
+	err := i.db.Delete(&database.IncomeExpense{}, id).Error
 
 	return err
 }

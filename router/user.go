@@ -141,5 +141,20 @@ func (rt *Router) handleSettingsIncomeExpenses(w http.ResponseWriter, r *http.Re
 		log.Fatalf("handleSettingsIncomeExpenses: %v\n", err)
 	}
 
-	err = tmplPartSettingsIncomeExpenses.Execute(w, ies)
+	// for _, ie := range ies {
+	// 	log.Printf("ID: %v | Label: %v\n", ie.ID, ie.Label)
+	// }
+
+	data := struct {
+		UserID         uint
+		IncomeExpenses []database.IncomeExpense
+	}{
+		UserID:         uint(id),
+		IncomeExpenses: ies,
+	}
+
+	err = tmplPartSettingsIncomeExpenses.Execute(w, data)
+	if err != nil {
+		log.Fatalf("handleSettingsIncomeExpenses: %v\n", err)
+	}
 }

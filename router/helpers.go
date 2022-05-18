@@ -34,6 +34,7 @@ const (
 	AppTitle = "Budget Helper"
 	GET      = "GET"
 	POST     = "POST"
+	DELETE   = "DELETE"
 )
 
 func addTemplate(path string) *template.Template {
