@@ -24,10 +24,12 @@ var (
 
 // -- TEMPLATES: PARTIALS --
 var (
-	tmplPartPayment                = addPartial("partials/payment.html")
-	tmplPartPaymentConfirmed       = addPartial("partials/payment-confirmed.html")
-	tmplPartSettingsAccount        = addPartial("partials/settings-account.html")
-	tmplPartSettingsIncomeExpenses = addPartial("partials/settings-incomeexpenses.html")
+	tmplPartPayment                    = addPartial("partials/payment.html")
+	tmplPartPaymentConfirmed           = addPartial("partials/payment-confirmed.html")
+	tmplPartSettingsAccount            = addPartial("partials/settings-account.html")
+	tmplPartSettingsIncomeExpenses     = addPartial("partials/settings-incomeexpenses.html")
+	tmplPartSettingsDataIncomeExpenses = addPartial("partials/settings-data-incomeexpenses.html")
+	tmplPartIncomeExpenseConfirmed     = addPartial("partials/incomeexpense-confirmed.html")
 )
 
 const (

@@ -1,11 +1,43 @@
 package router
 
 import (
-	"fmt"
+	"budget-helper/database"
 	"log"
 	"net/http"
 	"strconv"
 )
+
+func (rt *Router) handleSettingsDataIncomeExpenses(w http.ResponseWriter, r *http.Request) {
+	queryID := r.URL.Query().Get("id")
+	if queryID == "" {
+		displayErrorPage(w, r, http.StatusBadRequest,
+			"The request did not include a resource ID. Check the URL and try again.")
+	}
+
+	id, err := strconv.Atoi(queryID)
+	if err != nil {
+		log.Fatalf("handleSettingsDataIncomeExpenses: %v\n", err)
+	}
+
+	ies, err := rt.IncomeExpenseRepo.GetAllWithUserID(uint(id))
+	if err != nil {
+		log.Fatalf("handleSettingsDataIncomeExpenses: %v\n", err)
+	}
+
+	data := struct {
+		ID             uint
+		IncomeExpenses []database.IncomeExpense
+	}{
+		ID:             uint(id),
+		IncomeExpenses: ies,
+	}
+
+	err = tmplPartSettingsDataIncomeExpenses.Execute(w, data)
+	if err != nil {
+		log.Fatalf("handleSettingsDataIncomeExpenses: %v\n", err)
+	}
+
+}
 
 func (rt *Router) handleIncomeExpensesCreate(w http.ResponseWriter, r *http.Request) {
 	if r.Method != POST {
@@ -38,6 +70,7 @@ func (rt *Router) handleIncomeExpensesCreate(w http.ResponseWriter, r *http.Requ
 	if err != nil {
 		log.Fatalf("handleIncomeExpensesCreate: %v\n", err)
 	}
+
 	amount, err := strconv.ParseFloat(postAmount, 64)
 	if err != nil {
 		log.Fatalf("handleIncomeExpensesCreate: %v\n", err)
@@ -48,7 +81,19 @@ func (rt *Router) handleIncomeExpensesCreate(w http.ResponseWriter, r *http.Requ
 		log.Fatalf("handleIncomeExpensesCreate: %v\n", err)
 	}
 
-	_, err = fmt.Fprintf(w, "<ins>Saved!</ins>")
+	data := struct {
+		ID     uint
+		Create bool
+		Update bool
+		Delete bool
+	}{
+		ID:     uint(id),
+		Create: true,
+		Update: false,
+		Delete: false,
+	}
+
+	err = tmplPartIncomeExpenseConfirmed.Execute(w, data)
 	if err != nil {
 		log.Fatalf("handleIncomeExpensesCreate: %v\n", err)
 	}
@@ -102,8 +147,19 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 		log.Fatalf("handleIncomeExpensesUpdate: %v\n", err)
 	}
 
-	// Send just a checkbox or something similar, no need for a full template
-	_, err = fmt.Fprintf(w, "<ins>Saved</ins>")
+	data := struct {
+		ID     uint
+		Create bool
+		Update bool
+		Delete bool
+	}{
+		ID:     uint(id),
+		Create: false,
+		Update: true,
+		Delete: false,
+	}
+
+	err = tmplPartIncomeExpenseConfirmed.Execute(w, data)
 	if err != nil {
 		log.Fatalf("handleIncomeExpensesUpdate: %v\n", err)
 	}
@@ -136,7 +192,19 @@ func (rt *Router) handleIncomeExpensesDelete(w http.ResponseWriter, r *http.Requ
 		log.Fatalf("handleIncomeExpensesDelete: %v\n", err)
 	}
 
-	_, err = fmt.Fprintf(w, "<del>Deleted</del>")
+	data := struct {
+		ID     uint
+		Create bool
+		Update bool
+		Delete bool
+	}{
+		ID:     uint(id),
+		Create: false,
+		Update: false,
+		Delete: true,
+	}
+
+	err = tmplPartIncomeExpenseConfirmed.Execute(w, data)
 	if err != nil {
 		log.Fatalf("handleIncomeExpensesDelete: %v\n", err)
 	}

@@ -111,7 +111,7 @@ func (rt *Router) handleSettings(w http.ResponseWriter, r *http.Request) {
 func (rt *Router) handleSettingsAccount(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
-		log.Fatalf("handlePaymentsBudget: %v\n", err)
+		log.Fatalf("handleSettingsAccount: %v\n", err)
 	}
 
 	if id < 1 {
@@ -128,7 +128,7 @@ func (rt *Router) handleSettingsAccount(w http.ResponseWriter, r *http.Request) 
 func (rt *Router) handleSettingsIncomeExpenses(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
-		log.Fatalf("handlePaymentsBudget: %v\n", err)
+		log.Fatalf("handleSettingsIncomeExpenses: %v\n", err)
 	}
 
 	if id < 1 {
@@ -141,15 +141,11 @@ func (rt *Router) handleSettingsIncomeExpenses(w http.ResponseWriter, r *http.Re
 		log.Fatalf("handleSettingsIncomeExpenses: %v\n", err)
 	}
 
-	// for _, ie := range ies {
-	// 	log.Printf("ID: %v | Label: %v\n", ie.ID, ie.Label)
-	// }
-
 	data := struct {
-		UserID         uint
+		ID             uint
 		IncomeExpenses []database.IncomeExpense
 	}{
-		UserID:         uint(id),
+		ID:             uint(id),
 		IncomeExpenses: ies,
 	}
 
