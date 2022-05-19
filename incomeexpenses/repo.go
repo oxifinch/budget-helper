@@ -32,10 +32,11 @@ func (i *IncomeExpenseRepo) GetAllWithUserID(id uint) ([]database.IncomeExpense,
 
 func (i *IncomeExpenseRepo) Create(userID uint, label string, day uint, amount float64) (uint, error) {
 	ie := database.IncomeExpense{
-		UserID: userID,
-		Label:  label,
-		Day:    day,
-		Amount: amount,
+		UserID:  userID,
+		Label:   label,
+		Day:     day,
+		Amount:  amount,
+		Enabled: true,
 	}
 
 	err := i.db.Create(&ie).Error
@@ -43,7 +44,7 @@ func (i *IncomeExpenseRepo) Create(userID uint, label string, day uint, amount f
 	return ie.ID, err
 }
 
-func (i *IncomeExpenseRepo) Update(id uint, label string, day uint, amount float64) error {
+func (i *IncomeExpenseRepo) Update(id uint, label string, day uint, amount float64, enabled bool) error {
 	var ie database.IncomeExpense
 
 	// Check if record exists before trying to update.
@@ -57,6 +58,7 @@ func (i *IncomeExpenseRepo) Update(id uint, label string, day uint, amount float
 	ie.Label = label
 	ie.Day = day
 	ie.Amount = amount
+	ie.Enabled = enabled
 	i.db.Save(&ie)
 
 	return err

@@ -106,6 +106,8 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 			"The resource you requested does not support the method used.")
 	}
 
+	// TODO: Make sure the user is logged in and get their ID.
+
 	err := r.ParseForm()
 	if err != nil {
 		log.Fatalf("handleIncomeExpensesUpdate: %v\n", err)
@@ -116,10 +118,17 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 	postLabel := trimmedFormValue(r, "label")
 	postDay := trimmedFormValue(r, "day")
 	postAmount := trimmedFormValue(r, "amount")
+	postEnabled := trimmedFormValue(r, "enabled")
 
 	if postID == "" || postLabel == "" || postDay == "" || postAmount == "" {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"One or more fields was not submitted. Please try again.")
+	}
+
+	// If "enabled" was not checked(not included), default to false value.
+	enabled := true
+	if postEnabled == "" {
+		enabled = false
 	}
 
 	// Parse numerical values and create copies with the correct type.
@@ -142,18 +151,19 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 		log.Fatalf("handleIncomeExpensesUpdate: %v\n", err)
 	}
 
-	err = rt.IncomeExpenseRepo.Update(uint(id), postLabel, uint(day), amount)
+	err = rt.IncomeExpenseRepo.Update(uint(id), postLabel, uint(day), amount, enabled)
 	if err != nil {
 		log.Fatalf("handleIncomeExpensesUpdate: %v\n", err)
 	}
 
+	// TODO: Load the actual UserID here instead of the default 1.
 	data := struct {
 		ID     uint
 		Create bool
 		Update bool
 		Delete bool
 	}{
-		ID:     uint(id),
+		ID:     1,
 		Create: false,
 		Update: true,
 		Delete: false,
@@ -170,6 +180,8 @@ func (rt *Router) handleIncomeExpensesDelete(w http.ResponseWriter, r *http.Requ
 		displayErrorPage(w, r, http.StatusMethodNotAllowed,
 			"The resource you requested does not support the method used.")
 	}
+
+	// TODO: Make sure the user is logged in and get their ID.
 
 	queryID := r.URL.Query().Get("id")
 	if queryID == "" {
@@ -192,13 +204,14 @@ func (rt *Router) handleIncomeExpensesDelete(w http.ResponseWriter, r *http.Requ
 		log.Fatalf("handleIncomeExpensesDelete: %v\n", err)
 	}
 
+	// TODO: Load the actual UserID here instead of the default 1.
 	data := struct {
 		ID     uint
 		Create bool
 		Update bool
 		Delete bool
 	}{
-		ID:     uint(id),
+		ID:     1,
 		Create: false,
 		Update: false,
 		Delete: true,
