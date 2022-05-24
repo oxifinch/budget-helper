@@ -65,7 +65,5 @@ func (i *IncomeExpenseRepo) Update(id uint, label string, day uint, amount float
 }
 
 func (i *IncomeExpenseRepo) Delete(id uint) error {
-	err := i.db.Delete(&database.IncomeExpense{}, id).Error
-
-	return err
+	return i.db.Delete(&database.IncomeExpense{}, id).Error
 }
