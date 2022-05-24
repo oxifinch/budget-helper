@@ -38,9 +38,10 @@ func (rt *Router) handleNewBudget(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, ie := range ies {
-		if ie.Enabled == true {
-			data.DefaultAllocated += ie.Amount
+		if !ie.Enabled {
+			continue
 		}
+		data.DefaultAllocated += ie.Amount
 	}
 
 	err = tmplNewBudget.ExecuteTemplate(w, "base", data)

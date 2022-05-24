@@ -134,7 +134,6 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 			"One or more fields was not submitted. Please try again.")
 	}
 
-	// If "enabled" was not checked(not included), default to false value.
 	enabled := true
 	if postEnabled == "" {
 		enabled = false
