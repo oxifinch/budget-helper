@@ -3,7 +3,6 @@ package router
 import (
 	"budget-helper/database"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -17,22 +16,38 @@ func (rt *Router) handleNewBudget(w http.ResponseWriter, r *http.Request) {
 	// TODO: Get user ID above
 	categories, err := rt.CategoryRepo.GetAllWithUserID(1)
 	if err != nil {
-		log.Fatalf("handleNewBudget: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
+	}
+
+	ies, err := rt.IncomeExpenseRepo.GetAllWithUserID(1)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 
 	data := struct {
-		AppTitle   string
-		PageTitle  string
-		Categories []database.Category
+		AppTitle         string
+		PageTitle        string
+		Categories       []database.Category
+		DefaultAllocated float64
 	}{
 		AppTitle:   AppTitle,
 		PageTitle:  "New Budget",
 		Categories: categories,
 	}
 
+	for _, ie := range ies {
+		if !ie.Enabled {
+			continue
+		}
+		data.DefaultAllocated += ie.Amount
+	}
+
 	err = tmplNewBudget.ExecuteTemplate(w, "base", data)
 	if err != nil {
-		log.Fatalf("handleNewBudget: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 }
 
@@ -50,23 +65,28 @@ func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
 	// Check and convert POST values
 	allocated, err := strconv.ParseFloat(postAllocated, 32)
 	if err != nil {
-		log.Fatalf("handleNewBudgetSave: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 
 	_, err = time.Parse("2006-01-02", postStartDate)
 	if err != nil {
-		log.Fatalf("handleNewBudgetSave: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 
 	_, err = time.Parse("2006-01-02", postEndDate)
 	if err != nil {
-		log.Fatalf("handleNewBudgetSave: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
+
 	}
 
 	// TODO: Should a HTTP status 201 be sent here?
 	budgetID, err := rt.BudgetRepo.Create(postStartDate, postEndDate, allocated)
 	if err != nil {
-		log.Fatalf("handleNewBudgetSave: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"The resource could not be created.. Please try again later.")
 	}
 
 	// Loop through categories and create new BudgetCategories
@@ -78,17 +98,22 @@ func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
 		var ctID uint
 		_, err := fmt.Sscanf(key, "bc_allocated_%d", &ctID)
 		if err != nil {
-			log.Fatalf("handleNewBudgetSave: %v\n", err)
+			displayErrorPage(w, r, http.StatusInternalServerError,
+				"Something went wrong. Please try again later.")
 		}
 
 		allocated, err = strconv.ParseFloat(r.PostFormValue(key), 32)
 		if err != nil {
-			log.Fatalf("handleNewBudgetSave: %v\n", err)
+			displayErrorPage(w, r, http.StatusInternalServerError,
+				"Something went wrong. Please try again later.")
+
 		}
 
 		_, err = rt.BudgetRepo.CreateBudgetCategory(budgetID, ctID, allocated)
 		if err != nil {
-			log.Fatalf("handleNewBudgetSave: %v\n", err)
+			displayErrorPage(w, r, http.StatusInternalServerError,
+				"The resource could not be created.. Please try again later.")
+
 		}
 
 	}

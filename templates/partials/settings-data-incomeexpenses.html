@@ -1,0 +1,52 @@
+{{ range .IncomeExpenses }}
+<!-- TODO: Use stylesheet instead of inline styling -->
+<form style="margin-bottom: 0.2rem;">
+    <table style="margin-bottom: 0;">
+
+        <thead>
+            <tr>
+                <th scope="col"><b>Enabled</b></th>
+                <th scope="col"><b>Label</b></th>
+                <th scope="col"><b>Day</b></th>
+                <th scope="col"><b>Amount</b></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <input type="hidden" name="id" value="{{ .ID }}" required>
+                <td>
+                    <input type="checkbox" name="enabled" {{ if .Enabled }} checked {{end}}>
+                </td>
+
+                <td>
+                    <input type="text" name="label" value="{{ .Label }}" required>
+                </td>
+
+                <td>
+                    <input type="number" name="day" min="1" max="31" value="{{ .Day }}" required>
+                </td>
+
+                <td>
+                    <input type="number" name="amount" step=".01" value="{{ .Amount }}" required>
+                </td>
+                <td>
+                    <button 
+                        class="secondary outline"
+                        hx-post="/incomeexpensesUpdate">
+                        Save&nbsp;</button>
+                </td>
+                <td>
+                    <!-- TODO: Use stylesheet instead of inline styling -->
+                    <button
+                        style="color: #ff0000; border-color: #ff0000;"
+                        class="secondary outline"
+                        hx-delete="/incomeexpensesDelete?id={{ .ID }}">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+{{end}}

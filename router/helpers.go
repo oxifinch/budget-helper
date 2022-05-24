@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -17,20 +16,26 @@ var (
 	tmplLoginRequired = addTemplate("pages/loginrequired.html")
 	tmplLogin         = addTemplate("pages/login.html")
 	tmplRegister      = addTemplate("pages/register.html")
+	tmplSettings      = addTemplate("pages/settings.html")
 	tmplDashboard     = addTemplate("pages/dashboard.html")
 	tmplNewBudget     = addTemplate("pages/newbudget.html")
 )
 
 // -- TEMPLATES: PARTIALS --
 var (
-	tmplPartPayment          = addPartial("partials/payment.html")
-	tmplPartPaymentConfirmed = addPartial("partials/payment-confirmed.html")
+	tmplPartPayment                    = addPartial("partials/payment.html")
+	tmplPartPaymentConfirmed           = addPartial("partials/payment-confirmed.html")
+	tmplPartSettingsAccount            = addPartial("partials/settings-account.html")
+	tmplPartSettingsIncomeExpenses     = addPartial("partials/settings-incomeexpenses.html")
+	tmplPartSettingsDataIncomeExpenses = addPartial("partials/settings-data-incomeexpenses.html")
+	tmplPartIncomeExpenseConfirmed     = addPartial("partials/incomeexpense-confirmed.html")
 )
 
 const (
 	AppTitle = "Budget Helper"
 	GET      = "GET"
 	POST     = "POST"
+	DELETE   = "DELETE"
 )
 
 func addTemplate(path string) *template.Template {
@@ -77,7 +82,8 @@ func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, de
 	w.WriteHeader(statusCode)
 	err := tmplError.ExecuteTemplate(w, "base", data)
 	if err != nil {
-		log.Fatalf("displayErrorPage: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 }
 
@@ -93,7 +99,8 @@ func displayLoginRequired(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusUnauthorized)
 	err := tmplLoginRequired.ExecuteTemplate(w, "base", data)
 	if err != nil {
-		log.Fatalf("displayLoginRequired: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 }
 

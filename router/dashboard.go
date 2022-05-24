@@ -44,9 +44,10 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			displayErrorPage(w, r, http.StatusNotFound,
-				"The resource you requested could not be found in our database. Check the request and try again.")
+				"The resource you requested could not be found. Check the request and try again.")
 		} else {
-			log.Fatalf("handleDashboard: %v\n", err)
+			displayErrorPage(w, r, http.StatusInternalServerError,
+				"Something went wrong. Please try again later.")
 		}
 	}
 	data.Budget = b
@@ -69,6 +70,7 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 
 	err = tmplDashboard.ExecuteTemplate(w, "base", data)
 	if err != nil {
-		log.Fatalf("handleDashboard: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 }

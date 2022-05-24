@@ -4,6 +4,7 @@ import (
 	"budget-helper/budgets"
 	"budget-helper/categories"
 	"budget-helper/database"
+	"budget-helper/incomeexpenses"
 	"budget-helper/payments"
 	"budget-helper/router"
 	"budget-helper/users"
@@ -21,8 +22,9 @@ func NewServer(port string, db *database.Database) *Server {
 	b := budgets.NewBudgetRepo(db)
 	c := categories.NewCategoryRepo(db)
 	p := payments.NewPaymentRepo(db)
+	i := incomeexpenses.NewIncomeExpenseRepo(db)
 
-	router := router.NewRouter(u, b, c, p)
+	router := router.NewRouter(u, b, c, p, i)
 	router.RegisterRoutes()
 
 	return &Server{

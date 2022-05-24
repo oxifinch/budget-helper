@@ -1,0 +1,25 @@
+{{ if .Create }}
+    <ins 
+        hx-get="/settings/data/incomeexpenses?id={{ .ID }}" 
+        hx-target=".settings-data-incomeexpenses"
+        hx-trigger="load"
+    />
+    Saved!
+    </ins>
+{{ else if .Update }}
+    <ins 
+        hx-get="/settings/data/incomeexpenses?id={{ .ID }}" 
+        hx-target=".settings-data-incomeexpenses"
+        hx-trigger="load delay:800ms"
+    />
+    Updating...
+    </ins>
+{{ else if .Delete }}
+    <del
+        hx-get="/settings/data/incomeexpenses?id={{ .ID }}" 
+        hx-target=".settings-data-incomeexpenses"
+        hx-trigger="load delay:800ms"
+    />
+    Deleting...
+    </del>
+{{end}}

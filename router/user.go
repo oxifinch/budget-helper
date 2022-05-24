@@ -1,8 +1,9 @@
 package router
 
 import (
-	"log"
+	"budget-helper/database"
 	"net/http"
+	"strconv"
 )
 
 // -- USERS & AUTHENTICATION --
@@ -17,7 +18,8 @@ func (rt *Router) handleLogin(w http.ResponseWriter, r *http.Request) {
 
 	err := tmplLogin.ExecuteTemplate(w, "base", data)
 	if err != nil {
-		log.Fatalf("handleLogin: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 }
 
@@ -55,7 +57,8 @@ func (rt *Router) handleRegister(w http.ResponseWriter, r *http.Request) {
 
 	err := tmplRegister.ExecuteTemplate(w, "base", data)
 	if err != nil {
-		log.Fatalf("handleRegister: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 }
 
@@ -74,8 +77,89 @@ func (rt *Router) handleRegisterSave(w http.ResponseWriter, r *http.Request) {
 
 	_, err := rt.UserRepo.Create(username, password)
 	if err != nil {
-		log.Fatalf("handleRegisterSave: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"The resource could not be created.. Please try again later.")
 	}
 
 	http.Redirect(w, r, "/newBudget", http.StatusSeeOther)
+}
+
+func (rt *Router) handleSettings(w http.ResponseWriter, r *http.Request) {
+	// TODO: Check that user is auhenticated. Use UserID 1 for now.
+	id := 1
+
+	user, err := rt.UserRepo.Get(id)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
+	}
+
+	data := struct {
+		AppTitle  string
+		PageTitle string
+		User      *database.User
+	}{
+		AppTitle:  AppTitle,
+		PageTitle: "Settings",
+		User:      user,
+	}
+
+	err = tmplSettings.ExecuteTemplate(w, "base", data)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
+	}
+
+}
+
+func (rt *Router) handleSettingsAccount(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		displayErrorPage(w, r, http.StatusBadRequest,
+			"The request included an invalid resource ID. Check the URL and try again.")
+	}
+
+	if id < 1 {
+		displayErrorPage(w, r, http.StatusBadRequest,
+			"The request included an invalid resource ID. Check the URL and try again.")
+	}
+
+	err = tmplPartSettingsAccount.Execute(w, nil)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
+	}
+}
+
+func (rt *Router) handleSettingsIncomeExpenses(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		displayErrorPage(w, r, http.StatusBadRequest,
+			"The request included an invalid resource ID. Check the URL and try again.")
+	}
+
+	if id < 1 {
+		displayErrorPage(w, r, http.StatusBadRequest,
+			"The request included an invalid resource ID. Check the URL and try again.")
+	}
+
+	ies, err := rt.IncomeExpenseRepo.GetAllWithUserID(uint(id))
+	if err != nil {
+		displayErrorPage(w, r, http.StatusNotFound,
+			"The resource you requested could not be found. Check the request and try again.")
+	}
+
+	data := struct {
+		ID             uint
+		IncomeExpenses []database.IncomeExpense
+	}{
+		ID:             uint(id),
+		IncomeExpenses: ies,
+	}
+
+	err = tmplPartSettingsIncomeExpenses.Execute(w, data)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
+	}
 }

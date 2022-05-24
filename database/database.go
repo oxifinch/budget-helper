@@ -19,7 +19,14 @@ func NewDatabase() *Database {
 		log.Fatalf("NewDatabase: failed to connect to database: %v", err)
 	}
 
-	err = db.AutoMigrate(&User{}, &Budget{}, &Category{}, &BudgetCategory{}, &Payment{})
+	err = db.AutoMigrate(
+		&User{},
+		&Budget{},
+		&Category{},
+		&BudgetCategory{},
+		&Payment{},
+		&IncomeExpense{},
+	)
 	if err != nil {
 		log.Fatalf("NewDatabase: %v\n", err)
 	}
@@ -36,6 +43,7 @@ func (db *Database) Seed() {
 	db.Exec("DELETE FROM categories")
 	db.Exec("DELETE FROM budget_categories")
 	db.Exec("DELETE FROM payments")
+	db.Exec("DELETE FROM income_expenses")
 
 	newUsers := []User{
 		{Username: "joseph", Password: "secret01", Currency: SEK},
@@ -94,6 +102,18 @@ func (db *Database) Seed() {
 	}
 	for _, p := range newPayments {
 		err := db.Create(&p).Error
+		if err != nil {
+			log.Fatalf("Seed: %v\n", err)
+		}
+	}
+
+	newIncomeExpenses := []IncomeExpense{
+		{Label: "Salary", Day: 25, Amount: 12500, UserID: 1, Enabled: true},
+		{Label: "Netflix", Day: 20, Amount: -199, UserID: 1, Enabled: false},
+		{Label: "Spotify", Day: 20, Amount: -199, UserID: 1, Enabled: true},
+	}
+	for _, ie := range newIncomeExpenses {
+		err := db.Create(&ie).Error
 		if err != nil {
 			log.Fatalf("Seed: %v\n", err)
 		}

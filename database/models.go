@@ -19,6 +19,7 @@ type User struct {
 	Currency       Currency
 	Budgets        []Budget
 	Categories     []Category
+	IncomeExpenses []IncomeExpense
 }
 
 type Budget struct {
@@ -55,4 +56,14 @@ type Payment struct {
 	Note             string
 	BudgetCategoryID uint
 	BudgetCategory   BudgetCategory
+}
+
+type IncomeExpense struct {
+	gorm.Model
+	Label   string
+	Day     uint
+	Amount  float64
+	Enabled bool
+	UserID  uint
+	User    User
 }
