@@ -2,7 +2,6 @@ package router
 
 import (
 	"budget-helper/database"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -16,12 +15,14 @@ func (rt *Router) handleSettingsDataIncomeExpenses(w http.ResponseWriter, r *htt
 
 	id, err := strconv.Atoi(queryID)
 	if err != nil {
-		log.Fatalf("handleSettingsDataIncomeExpenses: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 
 	ies, err := rt.IncomeExpenseRepo.GetAllWithUserID(uint(id))
 	if err != nil {
-		log.Fatalf("handleSettingsDataIncomeExpenses: %v\n", err)
+		displayErrorPage(w, r, http.StatusNotFound,
+			"The resource you requested could not be found. Check the request and try again.")
 	}
 
 	data := struct {
@@ -34,7 +35,8 @@ func (rt *Router) handleSettingsDataIncomeExpenses(w http.ResponseWriter, r *htt
 
 	err = tmplPartSettingsDataIncomeExpenses.Execute(w, data)
 	if err != nil {
-		log.Fatalf("handleSettingsDataIncomeExpenses: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 
 }
@@ -47,7 +49,8 @@ func (rt *Router) handleIncomeExpensesCreate(w http.ResponseWriter, r *http.Requ
 
 	err := r.ParseForm()
 	if err != nil {
-		log.Fatalf("handleIncomeExpensesCreate: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 
 	// Validate POST values.
@@ -64,21 +67,25 @@ func (rt *Router) handleIncomeExpensesCreate(w http.ResponseWriter, r *http.Requ
 	// Parse numerical values and create copies with the correct type.
 	id, err := strconv.Atoi(postID)
 	if err != nil {
-		log.Fatalf("handleIncomeExpensesCreate: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 	day, err := strconv.Atoi(postDay)
 	if err != nil {
-		log.Fatalf("handleIncomeExpensesCreate: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 
 	amount, err := strconv.ParseFloat(postAmount, 64)
 	if err != nil {
-		log.Fatalf("handleIncomeExpensesCreate: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 
 	_, err = rt.IncomeExpenseRepo.Create(uint(id), postLabel, uint(day), amount)
 	if err != nil {
-		log.Fatalf("handleIncomeExpensesCreate: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"The resource could not be created. Please try again later.")
 	}
 
 	data := struct {
@@ -95,7 +102,8 @@ func (rt *Router) handleIncomeExpensesCreate(w http.ResponseWriter, r *http.Requ
 
 	err = tmplPartIncomeExpenseConfirmed.Execute(w, data)
 	if err != nil {
-		log.Fatalf("handleIncomeExpensesCreate: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 
 }
@@ -110,7 +118,8 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 
 	err := r.ParseForm()
 	if err != nil {
-		log.Fatalf("handleIncomeExpensesUpdate: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 
 	// Validate POST values.
@@ -134,7 +143,8 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 	// Parse numerical values and create copies with the correct type.
 	id, err := strconv.Atoi(postID)
 	if err != nil {
-		log.Fatalf("handleIncomeExpensesUpdate: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 	if id < 1 {
 		displayErrorPage(w, r, http.StatusBadRequest,
@@ -143,17 +153,20 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 
 	day, err := strconv.Atoi(postDay)
 	if err != nil {
-		log.Fatalf("handleIncomeExpensesUpdate: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 
 	amount, err := strconv.ParseFloat(postAmount, 64)
 	if err != nil {
-		log.Fatalf("handleIncomeExpensesUpdate: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 
 	err = rt.IncomeExpenseRepo.Update(uint(id), postLabel, uint(day), amount, enabled)
 	if err != nil {
-		log.Fatalf("handleIncomeExpensesUpdate: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 
 	// TODO: Load the actual UserID here instead of the default 1.
@@ -171,7 +184,8 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 
 	err = tmplPartIncomeExpenseConfirmed.Execute(w, data)
 	if err != nil {
-		log.Fatalf("handleIncomeExpensesUpdate: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 }
 
@@ -191,7 +205,8 @@ func (rt *Router) handleIncomeExpensesDelete(w http.ResponseWriter, r *http.Requ
 
 	id, err := strconv.Atoi(queryID)
 	if err != nil {
-		log.Fatalf("handleIncomeExpensesDelete: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 
 	if id < 1 {
@@ -201,7 +216,8 @@ func (rt *Router) handleIncomeExpensesDelete(w http.ResponseWriter, r *http.Requ
 
 	err = rt.IncomeExpenseRepo.Delete(uint(id))
 	if err != nil {
-		log.Fatalf("handleIncomeExpensesDelete: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"The resource could not be deleted. Please try again later.")
 	}
 
 	// TODO: Load the actual UserID here instead of the default 1.
@@ -219,6 +235,7 @@ func (rt *Router) handleIncomeExpensesDelete(w http.ResponseWriter, r *http.Requ
 
 	err = tmplPartIncomeExpenseConfirmed.Execute(w, data)
 	if err != nil {
-		log.Fatalf("handleIncomeExpensesDelete: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 }

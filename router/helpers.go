@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -83,7 +82,8 @@ func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, de
 	w.WriteHeader(statusCode)
 	err := tmplError.ExecuteTemplate(w, "base", data)
 	if err != nil {
-		log.Fatalf("displayErrorPage: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 }
 
@@ -99,7 +99,8 @@ func displayLoginRequired(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusUnauthorized)
 	err := tmplLoginRequired.ExecuteTemplate(w, "base", data)
 	if err != nil {
-		log.Fatalf("displayLoginRequired: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 }
 

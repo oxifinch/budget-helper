@@ -1,7 +1,6 @@
 package router
 
 import (
-	"log"
 	"net/http"
 )
 
@@ -17,6 +16,7 @@ func (rt *Router) handleHome(w http.ResponseWriter, r *http.Request) {
 
 	err := tmplHome.ExecuteTemplate(w, "base", data)
 	if err != nil {
-		log.Fatalf("handleHome: %v\n", err)
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 }
