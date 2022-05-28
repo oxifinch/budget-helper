@@ -4,16 +4,39 @@ import (
 	"budget-helper/database"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
-	"strconv"
-	"strings"
 
 	"gorm.io/gorm"
 )
 
 // -- DASHBOARD & MAIN APP ROUTES --
 func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
+	if !rt.userIsLoggedIn(w, r) {
+		displayLoginRequired(w, r)
+		return
+	}
+
+	session, err := rt.Store.Get(r, "session")
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"The server was unable to handle your user session. Please try again later.")
+		return
+	}
+
+	id, isset := session.Values["userID"]
+	if !isset {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"The server was unable to handle your user session. Please try again later.")
+		return
+	}
+
+	userID, ok := id.(uint)
+	if !ok {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"The server was unable to handle your user session. Please try again later.")
+		return
+	}
+
 	data := struct {
 		AppTitle         string
 		PageTitle        string
@@ -27,20 +50,7 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 		PageTitle: "Dashboard",
 	}
 
-	getBudgetID := strings.TrimSpace(r.URL.Query().Get("id"))
-	id, err := strconv.Atoi(getBudgetID)
-	if err != nil {
-		displayErrorPage(w, r, http.StatusBadRequest,
-			"The ID of the resource you are trying to access was not included in the request. Check the URL and try again.")
-	}
-	if id < 1 {
-		displayErrorPage(w, r, http.StatusBadRequest,
-			"The ID submitted in the request is invalid. Check the URL and try again.")
-	}
-
-	// TODO: Check for authentication and give user the right dashboard.
-	log.Printf("Looking for Budget with ID: %v...\n", id)
-	b, err := rt.BudgetRepo.Get(id)
+	b, err := rt.BudgetRepo.GetByUserID(userID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			displayErrorPage(w, r, http.StatusNotFound,

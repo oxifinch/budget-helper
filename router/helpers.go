@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -107,6 +108,7 @@ func displayLoginRequired(w http.ResponseWriter, r *http.Request) {
 func (rt *Router) userIsLoggedIn(w http.ResponseWriter, r *http.Request) bool {
 	session, err := rt.Store.Get(r, "session")
 	if err != nil {
+		log.Printf("userIsLoggedIn: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 	}
