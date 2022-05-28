@@ -33,6 +33,7 @@ func NewRouter(u *users.UserRepo, b *budgets.BudgetRepo,
 		CategoryRepo:      c,
 		PaymentRepo:       p,
 		IncomeExpenseRepo: i,
+		Store:             st,
 	}
 }
 

@@ -18,7 +18,6 @@ import (
 type Server struct {
 	Router *router.Router
 	Port   string
-	Store  *sessions.CookieStore
 }
 
 func NewServer(port string, db *database.Database) *Server {

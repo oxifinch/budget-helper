@@ -104,6 +104,18 @@ func displayLoginRequired(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (rt *Router) userIsLoggedIn(w http.ResponseWriter, r *http.Request) bool {
+	session, err := rt.Store.Get(r, "session")
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
+	}
+
+	_, isset := session.Values["userID"]
+
+	return isset
+}
+
 func trimmedFormValue(r *http.Request, key string) string {
 	return strings.TrimSpace(r.PostFormValue(key))
 }

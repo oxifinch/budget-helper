@@ -8,6 +8,10 @@ import (
 
 // -- USERS & AUTHENTICATION --
 func (rt *Router) handleLogin(w http.ResponseWriter, r *http.Request) {
+	if rt.userIsLoggedIn(w, r) {
+		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+	}
+
 	data := struct {
 		AppTitle  string
 		PageTitle string
@@ -24,6 +28,10 @@ func (rt *Router) handleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) handleLoginSave(w http.ResponseWriter, r *http.Request) {
+	if rt.userIsLoggedIn(w, r) {
+		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+	}
+
 	if r.Method != POST {
 		displayErrorPage(w, r, http.StatusMethodNotAllowed,
 			"The resource you requested does not support the method used.")
@@ -36,17 +44,26 @@ func (rt *Router) handleLoginSave(w http.ResponseWriter, r *http.Request) {
 			"One or more fields was not submitted. Please try again.")
 	}
 
-	_, err := rt.UserRepo.GetByCredentials(username, password)
+	u, err := rt.UserRepo.GetByCredentials(username, password)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusNotFound,
 			"We found no user with the provided credentials in the database. Please check your username and password, and try again.")
 	}
+
+	session, err := rt.Store.Get(r, "session")
+	// fmt.Print("Session: %v\n", session)
+	session.Values["userID"] = u.ID
+	session.Save(r, w)
 
 	// TODO: Set session before redirecting and get user's actual active budget
 	http.Redirect(w, r, "/dashboard?id=1", http.StatusSeeOther)
 }
 
 func (rt *Router) handleRegister(w http.ResponseWriter, r *http.Request) {
+	if rt.userIsLoggedIn(w, r) {
+		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+	}
+
 	data := struct {
 		AppTitle  string
 		PageTitle string
@@ -63,6 +80,10 @@ func (rt *Router) handleRegister(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) handleRegisterSave(w http.ResponseWriter, r *http.Request) {
+	if rt.userIsLoggedIn(w, r) {
+		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+	}
+
 	if r.Method != POST {
 		displayErrorPage(w, r, http.StatusMethodNotAllowed,
 			"The resource you requested does not support the method used.")
@@ -75,11 +96,15 @@ func (rt *Router) handleRegisterSave(w http.ResponseWriter, r *http.Request) {
 			"One or more fields was not submitted. Please try again.")
 	}
 
-	_, err := rt.UserRepo.Create(username, password)
+	uID, err := rt.UserRepo.Create(username, password)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"The resource could not be created.. Please try again later.")
 	}
+
+	session, err := rt.Store.Get(r, "session")
+	session.Values["userID"] = uID
+	session.Save(r, w)
 
 	http.Redirect(w, r, "/newBudget", http.StatusSeeOther)
 }
