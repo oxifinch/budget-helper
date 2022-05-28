@@ -10,17 +10,25 @@ import (
 )
 
 func (rt *Router) handleNewBudget(w http.ResponseWriter, r *http.Request) {
-	// TODO: User should be verified before anything else happens.
-	// displayLoginRequired(w, r)
+	if !rt.userIsLoggedIn(w, r) {
+		displayLoginRequired(w, r)
+		return
+	}
 
-	// TODO: Get user ID above
-	categories, err := rt.CategoryRepo.GetAllWithUserID(1)
+	id, err := rt.getUserIDFromSession(r)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 	}
 
-	ies, err := rt.IncomeExpenseRepo.GetAllWithUserID(1)
+	// TODO: Get user ID above
+	categories, err := rt.CategoryRepo.GetAllWithUserID(id)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
+	}
+
+	ies, err := rt.IncomeExpenseRepo.GetAllWithUserID(id)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
@@ -52,6 +60,11 @@ func (rt *Router) handleNewBudget(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
+	if !rt.userIsLoggedIn(w, r) {
+		displayLoginRequired(w, r)
+		return
+	}
+
 	// Validate POST
 	if r.Method != POST {
 		displayErrorPage(w, r, http.StatusMethodNotAllowed,
@@ -115,7 +128,6 @@ func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
 				"The resource could not be created.. Please try again later.")
 
 		}
-
 	}
 
 	http.Redirect(w, r, fmt.Sprintf("/dashboard?id=%v", budgetID), http.StatusSeeOther)

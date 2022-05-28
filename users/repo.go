@@ -12,7 +12,7 @@ func NewUserRepo(db *database.Database) *UserRepo {
 	return &UserRepo{db}
 }
 
-func (u *UserRepo) Get(id int) (*database.User, error) {
+func (u *UserRepo) Get(id uint) (*database.User, error) {
 	var user database.User
 
 	err := u.db.First(&user, id).Error

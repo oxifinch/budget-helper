@@ -3,7 +3,6 @@ package router
 import (
 	"budget-helper/database"
 	"net/http"
-	"strconv"
 )
 
 // -- USERS & AUTHENTICATION --
@@ -110,8 +109,17 @@ func (rt *Router) handleRegisterSave(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) handleSettings(w http.ResponseWriter, r *http.Request) {
-	// TODO: Check that user is auhenticated. Use UserID 1 for now.
-	id := 1
+	if !rt.userIsLoggedIn(w, r) {
+		displayLoginRequired(w, r)
+		return
+	}
+
+	id, err := rt.getUserIDFromSession(r)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"The server was unable to handle your user session. Please try again later.")
+		return
+	}
 
 	user, err := rt.UserRepo.Get(id)
 	if err != nil {
@@ -138,18 +146,12 @@ func (rt *Router) handleSettings(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) handleSettingsAccount(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
-	if err != nil {
-		displayErrorPage(w, r, http.StatusBadRequest,
-			"The request included an invalid resource ID. Check the URL and try again.")
+	if !rt.userIsLoggedIn(w, r) {
+		displayLoginRequired(w, r)
+		return
 	}
 
-	if id < 1 {
-		displayErrorPage(w, r, http.StatusBadRequest,
-			"The request included an invalid resource ID. Check the URL and try again.")
-	}
-
-	err = tmplPartSettingsAccount.Execute(w, nil)
+	err := tmplPartSettingsAccount.Execute(w, nil)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
@@ -157,18 +159,18 @@ func (rt *Router) handleSettingsAccount(w http.ResponseWriter, r *http.Request) 
 }
 
 func (rt *Router) handleSettingsIncomeExpenses(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if !rt.userIsLoggedIn(w, r) {
+		displayLoginRequired(w, r)
+		return
+	}
+
+	id, err := rt.getUserIDFromSession(r)
 	if err != nil {
-		displayErrorPage(w, r, http.StatusBadRequest,
-			"The request included an invalid resource ID. Check the URL and try again.")
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
 	}
 
-	if id < 1 {
-		displayErrorPage(w, r, http.StatusBadRequest,
-			"The request included an invalid resource ID. Check the URL and try again.")
-	}
-
-	ies, err := rt.IncomeExpenseRepo.GetAllWithUserID(uint(id))
+	ies, err := rt.IncomeExpenseRepo.GetAllWithUserID(id)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusNotFound,
 			"The resource you requested could not be found. Check the request and try again.")
