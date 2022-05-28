@@ -16,22 +16,8 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, err := rt.Store.Get(r, "session")
+	userID, err := rt.getUserIDFromSession(r)
 	if err != nil {
-		displayErrorPage(w, r, http.StatusInternalServerError,
-			"The server was unable to handle your user session. Please try again later.")
-		return
-	}
-
-	id, isset := session.Values["userID"]
-	if !isset {
-		displayErrorPage(w, r, http.StatusInternalServerError,
-			"The server was unable to handle your user session. Please try again later.")
-		return
-	}
-
-	userID, ok := id.(uint)
-	if !ok {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"The server was unable to handle your user session. Please try again later.")
 		return
