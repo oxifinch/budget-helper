@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // -- USERS & AUTHENTICATION --
@@ -133,8 +134,10 @@ func (rt *Router) handleSettingsAccount(w http.ResponseWriter, r *http.Request) 
 	}
 
 	data := struct {
-		User     *database.User
-		Currency string
+		User          *database.User
+		Currency      string
+		Budget        *database.Budget
+		BudgetExpired bool
 	}{
 		User: user,
 	}
@@ -153,6 +156,24 @@ func (rt *Router) handleSettingsAccount(w http.ResponseWriter, r *http.Request) 
 		data.Currency = "Unknown"
 		break
 	}
+
+	// Getting the budget's end date and comparing it to the current date, to notify
+	// the user if their current budget period has expired. If so, they should be given
+	// the option to create a new one.
+	b, err := rt.BudgetRepo.GetInfo(user.ActiveBudgetID)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"The server was unable to process your request. Please try again later.")
+	}
+	data.Budget = b
+
+	curDate := time.Now()
+	endDate, err := time.Parse("2006-01-02", b.EndDate)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"The server was unable to process your request. Please try again later.")
+	}
+	data.BudgetExpired = curDate.After(endDate)
 
 	err = tmplPartSettingsAccount.Execute(w, data)
 	if err != nil {
@@ -232,19 +253,15 @@ func (rt *Router) handleSettingsSaveAccount(w http.ResponseWriter, r *http.Reque
 	// TODO: There is probably a better way to do this but I'm having brainfarts
 	// at the time of writing. Come back and revise this.
 	var currency database.Currency
-	var currencyStr string
 	switch selectedCurrency {
 	case 1:
 		currency = database.USD
-		currencyStr = "USD"
 		break
 	case 2:
 		currency = database.EUR
-		currencyStr = "EUR"
 		break
 	case 3:
 		currency = database.SEK
-		currencyStr = "SEK"
 		break
 	}
 
@@ -255,13 +272,7 @@ func (rt *Router) handleSettingsSaveAccount(w http.ResponseWriter, r *http.Reque
 			"Your settings could not be saved at this time. Please try again later.")
 	}
 
-	data := struct {
-		Currency string
-	}{
-		Currency: currencyStr,
-	}
-
-	err = tmplPartSettingsAccount.Execute(w, data)
+	err = tmplPartAccountConfirmed.Execute(w, nil)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")

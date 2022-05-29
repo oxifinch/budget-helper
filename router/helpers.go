@@ -29,6 +29,7 @@ var (
 	tmplPartSettingsIncomeExpenses     = addPartial("partials/settings-incomeexpenses.html")
 	tmplPartSettingsDataIncomeExpenses = addPartial("partials/settings-data-incomeexpenses.html")
 	tmplPartIncomeExpenseConfirmed     = addPartial("partials/incomeexpense-confirmed.html")
+	tmplPartAccountConfirmed           = addPartial("partials/account-confirmed.html")
 )
 
 const (

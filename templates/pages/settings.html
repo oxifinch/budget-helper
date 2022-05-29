@@ -16,10 +16,10 @@
                 hx-target="#settings-container"
                 >Income &amp; Expenses</button>
         </div>
+        <!-- TODO: Use the authenticated user's ID instead of a query string -->
         <div id="settings-container" class="container" 
             hx-get="/settings/account?id={{ .User.ID }}" 
             hx-trigger="load">
-            
         </div>
     </div>
 {{end}}

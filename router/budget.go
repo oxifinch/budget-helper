@@ -89,6 +89,19 @@ func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
 			"The resource could not be created.. Please try again later.")
 	}
 
+	// TODO: Use actual User ID here. Use 1 for now.
+	user, err := rt.UserRepo.Get(1)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"The server was unable to get your user information. Please try again later.")
+	}
+
+	err = rt.UserRepo.UpdateSettings(user.ID, budgetID, user.Currency)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Your user settings could not be saved at this time. Please try again later.")
+	}
+
 	// Loop through categories and create new BudgetCategories
 	for key := range r.PostForm {
 		if !strings.Contains(key, "bc_allocated_") {
@@ -115,7 +128,6 @@ func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
 				"The resource could not be created.. Please try again later.")
 
 		}
-
 	}
 
 	http.Redirect(w, r, fmt.Sprintf("/dashboard?id=%v", budgetID), http.StatusSeeOther)
