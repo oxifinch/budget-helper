@@ -49,6 +49,7 @@ func (rt *Router) RegisterRoutes() {
 	rt.Handler.HandleFunc("/settings/account", rt.handleSettingsAccount)
 	rt.Handler.HandleFunc("/settings/incomeexpenses", rt.handleSettingsIncomeExpenses)
 	rt.Handler.HandleFunc("/settings/data/incomeexpenses", rt.handleSettingsDataIncomeExpenses)
+	rt.Handler.HandleFunc("/settingsSave/account", rt.handleSettingsSaveAccount)
 
 	// - Budget management -
 	rt.Handler.HandleFunc("/newBudget", rt.handleNewBudget)

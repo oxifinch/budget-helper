@@ -1,11 +1,21 @@
 <h3>Settings: Account</h3>
 <div class="settings-tab-account">
+    <p><strong>Currency: </strong>{{ .Currency }}</p>
     <form action="/settingsSave/account" method="POST">
+
         <select name="currency">
-            <!-- TODO: Load currencies in here instead of hardcoding. -->
+            <option value="" disabled selected>Select currency</option>
             <option value="1">USD</option>
             <option value="2">EUR</option>
             <option value="3">SEK</option>
         </select>
+
+        <button 
+            class="secondary"
+            hx-post="/settingsSave/account"
+            hx-target="#settings-container">
+            Save
+        </button>
+
     </form> 
 </div>

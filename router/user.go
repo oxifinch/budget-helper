@@ -4,6 +4,7 @@ import (
 	"budget-helper/database"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 // -- USERS & AUTHENTICATION --
@@ -86,7 +87,7 @@ func (rt *Router) handleRegisterSave(w http.ResponseWriter, r *http.Request) {
 
 func (rt *Router) handleSettings(w http.ResponseWriter, r *http.Request) {
 	// TODO: Check that user is auhenticated. Use UserID 1 for now.
-	id := 1
+	id := uint(1)
 
 	user, err := rt.UserRepo.Get(id)
 	if err != nil {
@@ -98,6 +99,7 @@ func (rt *Router) handleSettings(w http.ResponseWriter, r *http.Request) {
 		AppTitle  string
 		PageTitle string
 		User      *database.User
+		Currency  string
 	}{
 		AppTitle:  AppTitle,
 		PageTitle: "Settings",
@@ -124,7 +126,35 @@ func (rt *Router) handleSettingsAccount(w http.ResponseWriter, r *http.Request) 
 			"The request included an invalid resource ID. Check the URL and try again.")
 	}
 
-	err = tmplPartSettingsAccount.Execute(w, nil)
+	user, err := rt.UserRepo.Get(uint(id))
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"The server was unable to get your user information. Please try again later.")
+	}
+
+	data := struct {
+		User     *database.User
+		Currency string
+	}{
+		User: user,
+	}
+
+	switch user.Currency {
+	case database.USD:
+		data.Currency = "USD"
+		break
+	case database.EUR:
+		data.Currency = "EUR"
+		break
+	case database.SEK:
+		data.Currency = "SEK"
+		break
+	default:
+		data.Currency = "Unknown"
+		break
+	}
+
+	err = tmplPartSettingsAccount.Execute(w, data)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
@@ -158,6 +188,80 @@ func (rt *Router) handleSettingsIncomeExpenses(w http.ResponseWriter, r *http.Re
 	}
 
 	err = tmplPartSettingsIncomeExpenses.Execute(w, data)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
+	}
+}
+
+func (rt *Router) handleSettingsSaveAccount(w http.ResponseWriter, r *http.Request) {
+	// TODO: Check for user authentication. Use ID 1 for now.
+	id := uint(1)
+
+	// TODO: Is this the correct way of closing requests? Using return here to
+	// exit out of the function since there is nothing more to do.
+	defer r.Body.Close()
+	if r.Method != POST {
+		displayErrorPage(w, r, http.StatusMethodNotAllowed,
+			"The resource you requested does not support the method used.")
+		return
+	}
+
+	// Validate POST values
+	err := r.ParseForm()
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"The server was unable to process your request. Please try again later.")
+		return
+	}
+
+	postCurrency := strings.TrimSpace(r.PostFormValue("currency"))
+	if postCurrency == "" {
+		displayErrorPage(w, r, http.StatusBadRequest,
+			"One or more fields was not submitted in your request. Please check the request and try again.")
+		return
+	}
+
+	selectedCurrency, err := strconv.Atoi(postCurrency)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"The server was unable to process your request. Please try again later.")
+		return
+	}
+
+	// TODO: There is probably a better way to do this but I'm having brainfarts
+	// at the time of writing. Come back and revise this.
+	var currency database.Currency
+	var currencyStr string
+	switch selectedCurrency {
+	case 1:
+		currency = database.USD
+		currencyStr = "USD"
+		break
+	case 2:
+		currency = database.EUR
+		currencyStr = "EUR"
+		break
+	case 3:
+		currency = database.SEK
+		currencyStr = "SEK"
+		break
+	}
+
+	// TODO: Get user's active budget ID. Use ID 1 for now.
+	err = rt.UserRepo.UpdateSettings(id, 1, currency)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Your settings could not be saved at this time. Please try again later.")
+	}
+
+	data := struct {
+		Currency string
+	}{
+		Currency: currencyStr,
+	}
+
+	err = tmplPartSettingsAccount.Execute(w, data)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
