@@ -30,11 +30,13 @@ func (rt *Router) handleNewBudget(w http.ResponseWriter, r *http.Request) {
 		AppTitle         string
 		PageTitle        string
 		Categories       []database.Category
+		IncomeExpenses   []database.IncomeExpense
 		DefaultAllocated float64
 	}{
-		AppTitle:   AppTitle,
-		PageTitle:  "New Budget",
-		Categories: categories,
+		AppTitle:       AppTitle,
+		PageTitle:      "New Budget",
+		Categories:     categories,
+		IncomeExpenses: ies,
 	}
 
 	for _, ie := range ies {
