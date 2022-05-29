@@ -6,7 +6,7 @@
     <!-- TODO: Trim down amount to 2 decimal points -->
     <p class="payment-amount">-{{ .Amount }} {{ .BudgetCategory.Category.User.Currency }}</p>
     <small class="smallayment-note">{{ .Note }}</small>
-    <p class="payment-category">{{ .BudgetCategory.Category.Name }}</p>
+    <p class="payment-category" style="background-color: {{ .BudgetCategory.Category.Color }}; ">{{ .BudgetCategory.Category.Name }}</p>
 </div>
 
 {{end}}

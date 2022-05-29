@@ -5,13 +5,19 @@
     <div id="dashboard-summary" class="grid">
         <div>
             <!-- TODO: Add User currency here -->
-            <h3>Balance: {{ .BalanceRemaining }}</h3>
-            <small><em>Buffer: {{ .BufferRemaining }}</em></small>
+            <!-- TODO Add style sheet instead of inline styling -->
+            <h3 style="margin-bottom: 0.1rem;">Balance: {{ .BalanceRemaining }}</h3>
+            <h5 style="margin-bottom: 0.1rem;">Buffer remaining: {{ .BufferRemaining }}</h5>
         </div>
         <div>
-            <!-- TODO: Add bars for individual categories as well -->
-            <strong>{{ .PercentageSpent }}% spent</strong>
+            <strong>Total: {{ .PercentageSpent }}% spent</strong>
             <progress value="{{ .PercentageSpent }}" max="100"></progress>
+
+            {{ range.Budget.BudgetCategories }}
+            <strong>{{ .Category.Name }}: ??% spent</strong>
+            <!-- TODO: How do I set this color? -->
+            <progress value="25" max="100" style="color: {{ .Category.Color }}"></progress>
+            {{ end }}
         </div>
     </div>
 </header>
