@@ -18,23 +18,27 @@ func (rt *Router) handlePaymentsBudget(w http.ResponseWriter, r *http.Request) {
 	_, found := auth.LoggedInUser(rt.Store, r)
 	if !found {
 		displayLoginRequired(w, r)
+		return
 	}
 
 	bID, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"The request included an invalid resource ID. Check the URL and try again.")
+		return
 	}
 
 	if bID < 1 {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"The request included an invalid resource ID. Check the URL and try again.")
+		return
 	}
 
 	ps, err := rt.PaymentRepo.GetAllByBudgetID(uint(bID))
 	if err != nil {
 		displayErrorPage(w, r, http.StatusNotFound,
 			"The resource you requested could not be found. Check the request and try again.")
+		return
 	}
 
 	err = tmplPartPayment.Execute(w, ps)
@@ -42,6 +46,7 @@ func (rt *Router) handlePaymentsBudget(w http.ResponseWriter, r *http.Request) {
 		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 
 }
@@ -51,23 +56,27 @@ func (rt *Router) handlePaymentsBudgetCategory(w http.ResponseWriter, r *http.Re
 	_, found := auth.LoggedInUser(rt.Store, r)
 	if !found {
 		displayLoginRequired(w, r)
+		return
 	}
 
 	bcID, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"The request included an invalid resource ID. Check the URL and try again.")
+		return
 	}
 
 	if bcID < 1 {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"The request included an invalid resource ID. Check the URL and try again.")
+		return
 	}
 
 	ps, err := rt.PaymentRepo.GetAllByBudgetCategoryID(uint(bcID))
 	if err != nil {
 		displayErrorPage(w, r, http.StatusNotFound,
 			"The resource you request could not be found. Check the request and try again.")
+		return
 	}
 
 	err = tmplPartPayment.Execute(w, ps)
@@ -75,6 +84,7 @@ func (rt *Router) handlePaymentsBudgetCategory(w http.ResponseWriter, r *http.Re
 		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 
 }
@@ -84,23 +94,27 @@ func (rt *Router) handlePaymentsCategory(w http.ResponseWriter, r *http.Request)
 	_, found := auth.LoggedInUser(rt.Store, r)
 	if !found {
 		displayLoginRequired(w, r)
+		return
 	}
 
 	cID, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"The request included an invalid resource ID. Check the URL and try again.")
+		return
 	}
 
 	if cID < 1 {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"The request included an invalid resource ID. Check the URL and try again.")
+		return
 	}
 
 	ps, err := rt.PaymentRepo.GetAllByCategoryID(uint(cID))
 	if err != nil {
 		displayErrorPage(w, r, http.StatusNotFound,
 			"The resource you request could not be found. Check the request and try again.")
+		return
 	}
 
 	err = tmplPartPayment.Execute(w, ps)
@@ -108,6 +122,7 @@ func (rt *Router) handlePaymentsCategory(w http.ResponseWriter, r *http.Request)
 		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 }
 
@@ -116,12 +131,14 @@ func (rt *Router) handlePaymentsUser(w http.ResponseWriter, r *http.Request) {
 	id, found := auth.LoggedInUser(rt.Store, r)
 	if !found {
 		displayLoginRequired(w, r)
+		return
 	}
 
 	ps, err := rt.PaymentRepo.GetAllByUserID(id)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusNotFound,
 			"The resource you requested could not be found. Check the request and try again.")
+		return
 	}
 
 	err = tmplPartPayment.Execute(w, ps)
@@ -129,6 +146,7 @@ func (rt *Router) handlePaymentsUser(w http.ResponseWriter, r *http.Request) {
 		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 
 }
@@ -137,11 +155,13 @@ func (rt *Router) handlePaymentSave(w http.ResponseWriter, r *http.Request) {
 	_, found := auth.LoggedInUser(rt.Store, r)
 	if !found {
 		displayLoginRequired(w, r)
+		return
 	}
 
 	if r.Method != POST {
 		displayErrorPage(w, r, http.StatusMethodNotAllowed,
 			"The resource you requested does not support the method used.")
+		return
 	}
 
 	// Validate POST contents
@@ -156,12 +176,14 @@ func (rt *Router) handlePaymentSave(w http.ResponseWriter, r *http.Request) {
 		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 	amountFloat, err := strconv.ParseFloat(amount, 32)
 	if err != nil {
 		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 
 	data := struct {
@@ -182,5 +204,6 @@ func (rt *Router) handlePaymentSave(w http.ResponseWriter, r *http.Request) {
 		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 }

@@ -13,8 +13,8 @@ func LoggedInUser(s *sessions.CookieStore, r *http.Request) (uint, bool) {
 		log.Fatalf("LoggedInUser: %v\n", err)
 	}
 
-	id, isset := session.Values["userID"]
-	if !isset {
+	id, found := session.Values["userID"]
+	if !found {
 		return 0, false
 	}
 

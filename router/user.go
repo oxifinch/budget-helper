@@ -26,6 +26,7 @@ func (rt *Router) handleLogin(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 }
 
@@ -39,6 +40,7 @@ func (rt *Router) handleLoginSave(w http.ResponseWriter, r *http.Request) {
 	if r.Method != POST {
 		displayErrorPage(w, r, http.StatusMethodNotAllowed,
 			"The resource you requested does not support the method used.")
+		return
 	}
 
 	username := trimmedFormValue(r, "username")
@@ -46,12 +48,14 @@ func (rt *Router) handleLoginSave(w http.ResponseWriter, r *http.Request) {
 	if !nameAndPassValid(username, password) {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"One or more fields was not submitted. Please try again.")
+		return
 	}
 
 	u, err := rt.UserRepo.GetByCredentials(username, password)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusNotFound,
 			"We found no user with the provided credentials in the database. Please check your username and password, and try again.")
+		return
 	}
 
 	session, err := rt.Store.Get(r, "session")
@@ -81,6 +85,7 @@ func (rt *Router) handleRegister(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 }
 
@@ -94,6 +99,7 @@ func (rt *Router) handleRegisterSave(w http.ResponseWriter, r *http.Request) {
 	if r.Method != POST {
 		displayErrorPage(w, r, http.StatusMethodNotAllowed,
 			"The resource you requested does not support the method used.")
+		return
 	}
 
 	username := trimmedFormValue(r, "username")
@@ -101,12 +107,14 @@ func (rt *Router) handleRegisterSave(w http.ResponseWriter, r *http.Request) {
 	if !nameAndPassValid(username, password) {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"One or more fields was not submitted. Please try again.")
+		return
 	}
 
 	uID, err := rt.UserRepo.Create(username, password)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"The resource could not be created.. Please try again later.")
+		return
 	}
 
 	session, err := rt.Store.Get(r, "session")
@@ -160,6 +168,7 @@ func (rt *Router) handleSettingsAccount(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 }
 
@@ -167,12 +176,14 @@ func (rt *Router) handleSettingsIncomeExpenses(w http.ResponseWriter, r *http.Re
 	id, found := auth.LoggedInUser(rt.Store, r)
 	if !found {
 		displayLoginRequired(w, r)
+		return
 	}
 
 	ies, err := rt.IncomeExpenseRepo.GetAllWithUserID(id)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusNotFound,
 			"The resource you requested could not be found. Check the request and try again.")
+		return
 	}
 
 	data := struct {
@@ -187,5 +198,6 @@ func (rt *Router) handleSettingsIncomeExpenses(w http.ResponseWriter, r *http.Re
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 }

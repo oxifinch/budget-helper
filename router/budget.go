@@ -22,12 +22,14 @@ func (rt *Router) handleNewBudget(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 
 	ies, err := rt.IncomeExpenseRepo.GetAllWithUserID(id)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 
 	data := struct {
@@ -52,6 +54,7 @@ func (rt *Router) handleNewBudget(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 }
 
@@ -59,12 +62,14 @@ func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
 	_, found := auth.LoggedInUser(rt.Store, r)
 	if !found {
 		displayLoginRequired(w, r)
+		return
 	}
 
 	// Validate POST
 	if r.Method != POST {
 		displayErrorPage(w, r, http.StatusMethodNotAllowed,
 			"The resource you requested does not support the method used.")
+		return
 	}
 
 	postAllocated := trimmedFormValue(r, "allocated")
@@ -76,18 +81,21 @@ func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 
 	_, err = time.Parse("2006-01-02", postStartDate)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 
 	_, err = time.Parse("2006-01-02", postEndDate)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 
 	}
 
@@ -96,6 +104,7 @@ func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"The resource could not be created.. Please try again later.")
+		return
 	}
 
 	// Loop through categories and create new BudgetCategories
@@ -109,12 +118,14 @@ func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			displayErrorPage(w, r, http.StatusInternalServerError,
 				"Something went wrong. Please try again later.")
+			return
 		}
 
 		allocated, err = strconv.ParseFloat(r.PostFormValue(key), 32)
 		if err != nil {
 			displayErrorPage(w, r, http.StatusInternalServerError,
 				"Something went wrong. Please try again later.")
+			return
 
 		}
 
@@ -122,6 +133,7 @@ func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			displayErrorPage(w, r, http.StatusInternalServerError,
 				"The resource could not be created.. Please try again later.")
+			return
 
 		}
 	}

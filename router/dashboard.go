@@ -15,6 +15,7 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	id, found := auth.LoggedInUser(rt.Store, r)
 	if !found {
 		displayLoginRequired(w, r)
+		return
 	}
 
 	data := struct {
@@ -35,9 +36,11 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			displayErrorPage(w, r, http.StatusNotFound,
 				"The resource you requested could not be found. Check the request and try again.")
+			return
 		} else {
 			displayErrorPage(w, r, http.StatusInternalServerError,
 				"Something went wrong. Please try again later.")
+			return
 		}
 	}
 	data.Budget = b
@@ -62,5 +65,6 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 }
