@@ -1,6 +1,7 @@
 package router
 
 import (
+	"budget-helper/auth"
 	"budget-helper/database"
 	"errors"
 	"fmt"
@@ -11,16 +12,9 @@ import (
 
 // -- DASHBOARD & MAIN APP ROUTES --
 func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
-	if !rt.userIsLoggedIn(w, r) {
+	id, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
 		displayLoginRequired(w, r)
-		return
-	}
-
-	userID, err := rt.getUserIDFromSession(r)
-	if err != nil {
-		displayErrorPage(w, r, http.StatusInternalServerError,
-			"The server was unable to handle your user session. Please try again later.")
-		return
 	}
 
 	data := struct {
@@ -36,7 +30,7 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 		PageTitle: "Dashboard",
 	}
 
-	b, err := rt.BudgetRepo.GetByUserID(userID)
+	b, err := rt.BudgetRepo.GetByUserID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			displayErrorPage(w, r, http.StatusNotFound,

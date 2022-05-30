@@ -1,6 +1,7 @@
 package router
 
 import (
+	"budget-helper/auth"
 	"budget-helper/database"
 	"log"
 	"net/http"
@@ -8,16 +9,9 @@ import (
 )
 
 func (rt *Router) handleSettingsDataIncomeExpenses(w http.ResponseWriter, r *http.Request) {
-	if !rt.userIsLoggedIn(w, r) {
+	id, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
 		displayLoginRequired(w, r)
-		return
-	}
-
-	id, err := rt.getUserIDFromSession(r)
-	if err != nil {
-		displayErrorPage(w, r, http.StatusInternalServerError,
-			"Something went wrong. Please try again later.")
-		return
 	}
 
 	ies, err := rt.IncomeExpenseRepo.GetAllWithUserID(id)
@@ -45,9 +39,9 @@ func (rt *Router) handleSettingsDataIncomeExpenses(w http.ResponseWriter, r *htt
 }
 
 func (rt *Router) handleIncomeExpensesCreate(w http.ResponseWriter, r *http.Request) {
-	if !rt.userIsLoggedIn(w, r) {
+	id, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
 		displayLoginRequired(w, r)
-		return
 	}
 
 	if r.Method != POST {
@@ -88,12 +82,6 @@ func (rt *Router) handleIncomeExpensesCreate(w http.ResponseWriter, r *http.Requ
 			"Something went wrong. Please try again later.")
 	}
 
-	id, err := rt.getUserIDFromSession(r)
-	if err != nil {
-		displayErrorPage(w, r, http.StatusInternalServerError,
-			"Something went wrong. Please try again later.")
-	}
-
 	_, err = rt.IncomeExpenseRepo.Create(id, postLabel, uint(day), amount)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
@@ -122,17 +110,15 @@ func (rt *Router) handleIncomeExpensesCreate(w http.ResponseWriter, r *http.Requ
 }
 
 func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Request) {
-	if !rt.userIsLoggedIn(w, r) {
+	id, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
 		displayLoginRequired(w, r)
-		return
 	}
 
 	if r.Method != POST {
 		displayErrorPage(w, r, http.StatusMethodNotAllowed,
 			"The resource you requested does not support the method used.")
 	}
-
-	// TODO: Make sure the user is logged in and get their ID.
 
 	err := r.ParseForm()
 	if err != nil {
@@ -159,13 +145,13 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 	}
 
 	// Parse numerical values and create copies with the correct type.
-	id, err := strconv.Atoi(postID)
+	ieID, err := strconv.Atoi(postID)
 	if err != nil {
 		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 	}
-	if id < 1 {
+	if ieID < 1 {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"The resource ID submitted with the request is invalid. Double-check the request and try again.")
 	}
@@ -184,21 +170,20 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 			"Something went wrong. Please try again later.")
 	}
 
-	err = rt.IncomeExpenseRepo.Update(uint(id), postLabel, uint(day), amount, enabled)
+	err = rt.IncomeExpenseRepo.Update(uint(ieID), postLabel, uint(day), amount, enabled)
 	if err != nil {
 		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 	}
 
-	// TODO: Load the actual UserID here instead of the default 1.
 	data := struct {
 		ID     uint
 		Create bool
 		Update bool
 		Delete bool
 	}{
-		ID:     1,
+		ID:     id,
 		Create: false,
 		Update: true,
 		Delete: false,
@@ -213,9 +198,9 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 }
 
 func (rt *Router) handleIncomeExpensesDelete(w http.ResponseWriter, r *http.Request) {
-	if !rt.userIsLoggedIn(w, r) {
+	id, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
 		displayLoginRequired(w, r)
-		return
 	}
 
 	if r.Method != DELETE {
@@ -223,15 +208,13 @@ func (rt *Router) handleIncomeExpensesDelete(w http.ResponseWriter, r *http.Requ
 			"The resource you requested does not support the method used.")
 	}
 
-	// TODO: Make sure the user is logged in and get their ID.
-
 	queryID := r.URL.Query().Get("id")
 	if queryID == "" {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"No resource ID was submitted in the request. Check the URL and try again.")
 	}
 
-	id, err := strconv.Atoi(queryID)
+	ieID, err := strconv.Atoi(queryID)
 	if err != nil {
 		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
@@ -243,7 +226,7 @@ func (rt *Router) handleIncomeExpensesDelete(w http.ResponseWriter, r *http.Requ
 			"The resource ID submitted in the reqest is invalid. Check the URL and try again.")
 	}
 
-	err = rt.IncomeExpenseRepo.Delete(uint(id))
+	err = rt.IncomeExpenseRepo.Delete(uint(ieID))
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"The resource could not be deleted. Please try again later.")

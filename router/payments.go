@@ -1,6 +1,7 @@
 package router
 
 import (
+	"budget-helper/auth"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,23 +15,23 @@ import (
 // ----------------------------------------------------------------------------------
 // Get all payments from a specific Budget.
 func (rt *Router) handlePaymentsBudget(w http.ResponseWriter, r *http.Request) {
-	if !rt.userIsLoggedIn(w, r) {
+	_, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
 		displayLoginRequired(w, r)
-		return
 	}
 
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	bID, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"The request included an invalid resource ID. Check the URL and try again.")
 	}
 
-	if id < 1 {
+	if bID < 1 {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"The request included an invalid resource ID. Check the URL and try again.")
 	}
 
-	ps, err := rt.PaymentRepo.GetAllByBudgetID(uint(id))
+	ps, err := rt.PaymentRepo.GetAllByBudgetID(uint(bID))
 	if err != nil {
 		displayErrorPage(w, r, http.StatusNotFound,
 			"The resource you requested could not be found. Check the request and try again.")
@@ -47,23 +48,23 @@ func (rt *Router) handlePaymentsBudget(w http.ResponseWriter, r *http.Request) {
 
 // Get all payments from a BudgetCategory.
 func (rt *Router) handlePaymentsBudgetCategory(w http.ResponseWriter, r *http.Request) {
-	if !rt.userIsLoggedIn(w, r) {
+	_, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
 		displayLoginRequired(w, r)
-		return
 	}
 
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	bcID, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"The request included an invalid resource ID. Check the URL and try again.")
 	}
 
-	if id < 1 {
+	if bcID < 1 {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"The request included an invalid resource ID. Check the URL and try again.")
 	}
 
-	ps, err := rt.PaymentRepo.GetAllByBudgetCategoryID(uint(id))
+	ps, err := rt.PaymentRepo.GetAllByBudgetCategoryID(uint(bcID))
 	if err != nil {
 		displayErrorPage(w, r, http.StatusNotFound,
 			"The resource you request could not be found. Check the request and try again.")
@@ -80,23 +81,23 @@ func (rt *Router) handlePaymentsBudgetCategory(w http.ResponseWriter, r *http.Re
 
 // Get all payments from a User's category across all their Budgets.
 func (rt *Router) handlePaymentsCategory(w http.ResponseWriter, r *http.Request) {
-	if !rt.userIsLoggedIn(w, r) {
+	_, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
 		displayLoginRequired(w, r)
-		return
 	}
 
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	cID, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"The request included an invalid resource ID. Check the URL and try again.")
 	}
 
-	if id < 1 {
+	if cID < 1 {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"The request included an invalid resource ID. Check the URL and try again.")
 	}
 
-	ps, err := rt.PaymentRepo.GetAllByCategoryID(uint(id))
+	ps, err := rt.PaymentRepo.GetAllByCategoryID(uint(cID))
 	if err != nil {
 		displayErrorPage(w, r, http.StatusNotFound,
 			"The resource you request could not be found. Check the request and try again.")
@@ -108,32 +109,14 @@ func (rt *Router) handlePaymentsCategory(w http.ResponseWriter, r *http.Request)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 	}
-
 }
 
 // Get all payments from the User account.
 func (rt *Router) handlePaymentsUser(w http.ResponseWriter, r *http.Request) {
-	if !rt.userIsLoggedIn(w, r) {
+	id, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
 		displayLoginRequired(w, r)
-		return
 	}
-
-	id, err := rt.getUserIDFromSession(r)
-	if err != nil {
-		displayErrorPage(w, r, http.StatusInternalServerError,
-			"Something went wrong. Please try again later.")
-	}
-
-	// id, err := strconv.Atoi(r.URL.Query().Get("id"))
-	// if err != nil {
-	// 	displayErrorPage(w, r, http.StatusBadRequest,
-	// 		"The request included an invalid resource ID. Check the URL and try again.")
-	// }
-
-	// if id < 1 {
-	// 	displayErrorPage(w, r, http.StatusBadRequest,
-	// 		"The request included an invalid resource ID. Check the URL and try again.")
-	// }
 
 	ps, err := rt.PaymentRepo.GetAllByUserID(id)
 	if err != nil {
@@ -151,9 +134,9 @@ func (rt *Router) handlePaymentsUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) handlePaymentSave(w http.ResponseWriter, r *http.Request) {
-	if !rt.userIsLoggedIn(w, r) {
+	_, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
 		displayLoginRequired(w, r)
-		return
 	}
 
 	if r.Method != POST {

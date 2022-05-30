@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -103,37 +102,6 @@ func displayLoginRequired(w http.ResponseWriter, r *http.Request) {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 	}
-}
-
-func (rt *Router) userIsLoggedIn(w http.ResponseWriter, r *http.Request) bool {
-	session, err := rt.Store.Get(r, "session")
-	if err != nil {
-		log.Printf("userIsLoggedIn: %v\n", err)
-		displayErrorPage(w, r, http.StatusInternalServerError,
-			"Something went wrong. Please try again later.")
-	}
-
-	_, isset := session.Values["userID"]
-
-	return isset
-}
-
-func (rt *Router) getUserIDFromSession(r *http.Request) (uint, error) {
-	session, err := rt.Store.Get(r, "session")
-
-	id, isset := session.Values["userID"]
-	if !isset {
-		// TODO: Generate a new error instead
-		log.Fatalf("getUserIDFromSession: userID not set in session.\n")
-	}
-
-	userID, ok := id.(uint)
-	if !ok {
-		// TODO: Generate a new error instead
-		log.Fatalf("getUserIDFromSession: Could not convert userID interface to uint.\n")
-	}
-
-	return userID, err
 }
 
 func trimmedFormValue(r *http.Request, key string) string {

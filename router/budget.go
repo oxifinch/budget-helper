@@ -1,6 +1,7 @@
 package router
 
 import (
+	"budget-helper/auth"
 	"budget-helper/database"
 	"fmt"
 	"net/http"
@@ -10,15 +11,10 @@ import (
 )
 
 func (rt *Router) handleNewBudget(w http.ResponseWriter, r *http.Request) {
-	if !rt.userIsLoggedIn(w, r) {
+	id, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
 		displayLoginRequired(w, r)
 		return
-	}
-
-	id, err := rt.getUserIDFromSession(r)
-	if err != nil {
-		displayErrorPage(w, r, http.StatusInternalServerError,
-			"Something went wrong. Please try again later.")
 	}
 
 	// TODO: Get user ID above
@@ -60,9 +56,9 @@ func (rt *Router) handleNewBudget(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
-	if !rt.userIsLoggedIn(w, r) {
+	_, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
 		displayLoginRequired(w, r)
-		return
 	}
 
 	// Validate POST

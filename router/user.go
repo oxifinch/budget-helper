@@ -1,14 +1,17 @@
 package router
 
 import (
+	"budget-helper/auth"
 	"budget-helper/database"
 	"net/http"
 )
 
 // -- USERS & AUTHENTICATION --
 func (rt *Router) handleLogin(w http.ResponseWriter, r *http.Request) {
-	if rt.userIsLoggedIn(w, r) {
+	_, found := auth.LoggedInUser(rt.Store, r)
+	if found {
 		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+		return
 	}
 
 	data := struct {
@@ -27,8 +30,10 @@ func (rt *Router) handleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) handleLoginSave(w http.ResponseWriter, r *http.Request) {
-	if rt.userIsLoggedIn(w, r) {
+	_, found := auth.LoggedInUser(rt.Store, r)
+	if found {
 		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+		return
 	}
 
 	if r.Method != POST {
@@ -50,7 +55,6 @@ func (rt *Router) handleLoginSave(w http.ResponseWriter, r *http.Request) {
 	}
 
 	session, err := rt.Store.Get(r, "session")
-	// fmt.Print("Session: %v\n", session)
 	session.Values["userID"] = u.ID
 	session.Save(r, w)
 
@@ -59,8 +63,10 @@ func (rt *Router) handleLoginSave(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) handleRegister(w http.ResponseWriter, r *http.Request) {
-	if rt.userIsLoggedIn(w, r) {
+	_, found := auth.LoggedInUser(rt.Store, r)
+	if found {
 		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+		return
 	}
 
 	data := struct {
@@ -79,8 +85,10 @@ func (rt *Router) handleRegister(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) handleRegisterSave(w http.ResponseWriter, r *http.Request) {
-	if rt.userIsLoggedIn(w, r) {
+	_, found := auth.LoggedInUser(rt.Store, r)
+	if found {
 		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+		return
 	}
 
 	if r.Method != POST {
@@ -109,15 +117,9 @@ func (rt *Router) handleRegisterSave(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) handleSettings(w http.ResponseWriter, r *http.Request) {
-	if !rt.userIsLoggedIn(w, r) {
+	id, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
 		displayLoginRequired(w, r)
-		return
-	}
-
-	id, err := rt.getUserIDFromSession(r)
-	if err != nil {
-		displayErrorPage(w, r, http.StatusInternalServerError,
-			"The server was unable to handle your user session. Please try again later.")
 		return
 	}
 
@@ -125,6 +127,7 @@ func (rt *Router) handleSettings(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 
 	data := struct {
@@ -141,12 +144,14 @@ func (rt *Router) handleSettings(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 
 }
 
 func (rt *Router) handleSettingsAccount(w http.ResponseWriter, r *http.Request) {
-	if !rt.userIsLoggedIn(w, r) {
+	_, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
 		displayLoginRequired(w, r)
 		return
 	}
@@ -159,15 +164,9 @@ func (rt *Router) handleSettingsAccount(w http.ResponseWriter, r *http.Request) 
 }
 
 func (rt *Router) handleSettingsIncomeExpenses(w http.ResponseWriter, r *http.Request) {
-	if !rt.userIsLoggedIn(w, r) {
+	id, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
 		displayLoginRequired(w, r)
-		return
-	}
-
-	id, err := rt.getUserIDFromSession(r)
-	if err != nil {
-		displayErrorPage(w, r, http.StatusInternalServerError,
-			"Something went wrong. Please try again later.")
 	}
 
 	ies, err := rt.IncomeExpenseRepo.GetAllWithUserID(id)
