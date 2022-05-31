@@ -155,55 +155,62 @@ func getCurrency(n uint) database.Currency {
 	return currency
 }
 
-func getBudgetRemainingBalance(b *database.Budget) float64 {
+func budgetCategoriesAllocated(b *database.Budget) float64 {
 	var bcAllocated float64
-	var spent float64
 
 	for _, bc := range b.BudgetCategories {
 		bcAllocated += bc.Allocated
+	}
 
+	return bcAllocated
+}
+
+func budgetCategoriesSpent(b *database.Budget) float64 {
+	var bcSpent float64
+
+	for _, bc := range b.BudgetCategories {
 		var spentInBC float64
 		for _, p := range bc.Payments {
 			spentInBC += p.Amount
 		}
-		spent += spentInBC
+		bcSpent += spentInBC
 	}
 
-	return bcAllocated - spent
+	return bcSpent
 }
 
-func getBudgetRemainingBuffer(b *database.Budget) float64 {
-	var bufferSpent float64
-	var bcAllocated float64
+func budgetBufferAllocated(b *database.Budget) float64 {
+	return b.Allocated - budgetCategoriesAllocated(b)
+}
+
+func budgetBufferSpent(b *database.Budget) float64 {
+	var bufSpent float64
 
 	for _, bc := range b.BudgetCategories {
-		bcAllocated += bc.Allocated
-
 		var spentInBC float64
+
 		for _, p := range bc.Payments {
 			spentInBC += p.Amount
 		}
 
 		if spentInBC > bc.Allocated {
-			bufferSpent += (bc.Allocated - spentInBC)
+			bufSpent += (spentInBC - bc.Allocated)
 		}
 	}
 
-	return (b.Allocated - bcAllocated) - bufferSpent
+	return bufSpent
 }
 
-func getBudgetCategoriesTotalSpent(b *database.Budget) float64 {
-	var totalSpent float64
+func budgetPercentageSpent(b *database.Budget) int {
+	return int((budgetCategoriesSpent(b) / budgetCategoriesAllocated(b)) * 100)
+}
 
-	for _, bc := range b.BudgetCategories {
-		for _, p := range bc.Payments {
-			totalSpent += p.Amount
-		}
+func budgetCategoryPercentageSpent(bc *database.BudgetCategory) int {
+	var spentInBC float64
+
+	for _, p := range bc.Payments {
+		spentInBC += p.Amount
 	}
 
-	return totalSpent
-}
-
-func getBudgetCategoriesPercentageSpent(b *database.Budget) int {
-	return int((getBudgetCategoriesTotalSpent(b) / b.Allocated) * 100)
+	return int((spentInBC / bc.Allocated) * 100)
 }
