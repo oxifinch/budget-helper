@@ -84,6 +84,7 @@ func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, de
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 }
 
@@ -101,6 +102,7 @@ func displayLoginRequired(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 }
 

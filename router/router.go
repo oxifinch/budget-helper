@@ -7,6 +7,8 @@ import (
 	"budget-helper/payments"
 	"budget-helper/users"
 	"net/http"
+
+	"github.com/gorilla/sessions"
 )
 
 type Router struct {
@@ -16,11 +18,12 @@ type Router struct {
 	CategoryRepo      *categories.CategoryRepo
 	PaymentRepo       *payments.PaymentRepo
 	IncomeExpenseRepo *incomeexpenses.IncomeExpenseRepo
+	Store             *sessions.CookieStore
 }
 
 func NewRouter(u *users.UserRepo, b *budgets.BudgetRepo,
 	c *categories.CategoryRepo, p *payments.PaymentRepo,
-	i *incomeexpenses.IncomeExpenseRepo) *Router {
+	i *incomeexpenses.IncomeExpenseRepo, st *sessions.CookieStore) *Router {
 	h := http.NewServeMux()
 
 	return &Router{
@@ -30,6 +33,7 @@ func NewRouter(u *users.UserRepo, b *budgets.BudgetRepo,
 		CategoryRepo:      c,
 		PaymentRepo:       p,
 		IncomeExpenseRepo: i,
+		Store:             st,
 	}
 }
 

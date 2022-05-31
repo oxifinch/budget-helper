@@ -12,12 +12,24 @@ func NewBudgetRepo(db *database.Database) *BudgetRepo {
 	return &BudgetRepo{db}
 }
 
-func (b *BudgetRepo) Get(id int) (*database.Budget, error) {
+func (b *BudgetRepo) Get(id uint) (*database.Budget, error) {
 	var budget database.Budget
 
 	err := b.db.Preload("BudgetCategories.Category").
 		Preload("BudgetCategories.Payments").
 		First(&budget, id).Error
+
+	return &budget, err
+}
+
+func (b *BudgetRepo) GetByUserID(id uint) (*database.Budget, error) {
+	var budget database.Budget
+
+	err := b.db.
+		Preload("BudgetCategories.Category").
+		Preload("BudgetCategories.Payments").
+		Where("user_id = ?", id).
+		First(&budget).Error
 
 	return &budget, err
 }
