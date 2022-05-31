@@ -162,13 +162,13 @@ func (rt *Router) handleSettings(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) handleSettingsAccount(w http.ResponseWriter, r *http.Request) {
-	_, found := auth.LoggedInUser(rt.Store, r)
+	id, found := auth.LoggedInUser(rt.Store, r)
 	if !found {
 		displayLoginRequired(w, r)
 		return
 	}
 
-	user, err := rt.UserRepo.Get(uint(id))
+	user, err := rt.UserRepo.Get(id)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"The server was unable to get your user information. Please try again later.")
@@ -183,21 +183,7 @@ func (rt *Router) handleSettingsAccount(w http.ResponseWriter, r *http.Request) 
 	}{
 		User: user,
 	}
-
-	switch user.Currency {
-	case database.USD:
-		data.Currency = "USD"
-		break
-	case database.EUR:
-		data.Currency = "EUR"
-		break
-	case database.SEK:
-		data.Currency = "SEK"
-		break
-	default:
-		data.Currency = "Unknown"
-		break
-	}
+	data.Currency = getCurrencyString(&user.Currency)
 
 	// Getting the budget's end date and comparing it to the current date, to notify
 	// the user if their current budget period has expired. If so, they should be given

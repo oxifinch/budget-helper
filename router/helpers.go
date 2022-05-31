@@ -1,11 +1,10 @@
 package router
 
 import (
-	"encoding/json"
+	"budget-helper/database"
 	"fmt"
 	"html/template"
 	"net/http"
-	"os"
 	"strings"
 )
 
@@ -115,9 +114,23 @@ func nameAndPassValid(username string, password string) bool {
 	return strings.TrimSpace(username) != "" && strings.TrimSpace(password) != ""
 }
 
-func saveJson(data struct{}) error {
-	json, err := json.MarshalIndent(data, "", "\t")
-	err = os.WriteFile("./data-budget.json", json, 0666)
+func getCurrencyString(c *database.Currency) string {
+	var str string
 
-	return err
+	switch *c {
+	case database.USD:
+		str = "USD"
+		break
+	case database.EUR:
+		str = "EUR"
+		break
+	case database.SEK:
+		str = "SEK"
+		break
+	default:
+		str = "Unknown currency"
+		break
+	}
+
+	return str
 }
