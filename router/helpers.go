@@ -114,10 +114,10 @@ func nameAndPassValid(username string, password string) bool {
 	return strings.TrimSpace(username) != "" && strings.TrimSpace(password) != ""
 }
 
-func getCurrencyString(c *database.Currency) string {
+func getCurrencyString(c database.Currency) string {
 	var str string
 
-	switch *c {
+	switch c {
 	case database.USD:
 		str = "USD"
 		break
@@ -133,4 +133,24 @@ func getCurrencyString(c *database.Currency) string {
 	}
 
 	return str
+}
+
+func getCurrency(n uint) database.Currency {
+	var currency database.Currency
+	switch n {
+	case 1:
+		currency = database.USD
+		break
+	case 2:
+		currency = database.EUR
+		break
+	case 3:
+		currency = database.SEK
+		break
+	default:
+		currency = database.UnknownCurrency
+		break
+	}
+
+	return currency
 }

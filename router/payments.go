@@ -3,7 +3,6 @@ package router
 import (
 	"budget-helper/auth"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -43,7 +42,6 @@ func (rt *Router) handlePaymentsBudget(w http.ResponseWriter, r *http.Request) {
 
 	err = tmplPartPayment.Execute(w, ps)
 	if err != nil {
-		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 		return
@@ -81,7 +79,6 @@ func (rt *Router) handlePaymentsBudgetCategory(w http.ResponseWriter, r *http.Re
 
 	err = tmplPartPayment.Execute(w, ps)
 	if err != nil {
-		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 		return
@@ -119,7 +116,6 @@ func (rt *Router) handlePaymentsCategory(w http.ResponseWriter, r *http.Request)
 
 	err = tmplPartPayment.Execute(w, ps)
 	if err != nil {
-		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 		return
@@ -143,7 +139,6 @@ func (rt *Router) handlePaymentsUser(w http.ResponseWriter, r *http.Request) {
 
 	err = tmplPartPayment.Execute(w, ps)
 	if err != nil {
-		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 		return
@@ -173,14 +168,12 @@ func (rt *Router) handlePaymentSave(w http.ResponseWriter, r *http.Request) {
 	// Convert ID and amount
 	bcIDInt, err := strconv.Atoi(bcID)
 	if err != nil {
-		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 		return
 	}
 	amountFloat, err := strconv.ParseFloat(amount, 32)
 	if err != nil {
-		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 		return
@@ -201,7 +194,6 @@ func (rt *Router) handlePaymentSave(w http.ResponseWriter, r *http.Request) {
 
 	err = tmplPartPaymentConfirmed.Execute(w, data)
 	if err != nil {
-		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 		return

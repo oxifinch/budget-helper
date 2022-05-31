@@ -61,7 +61,7 @@ func (rt *Router) handleNewBudget(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
-	_, found := auth.LoggedInUser(rt.Store, r)
+	id, found := auth.LoggedInUser(rt.Store, r)
 	if !found {
 		displayLoginRequired(w, r)
 		return
@@ -102,15 +102,14 @@ func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: Should a HTTP status 201 be sent here?
-	budgetID, err := rt.BudgetRepo.Create(postStartDate, postEndDate, allocated)
+	budgetID, err := rt.BudgetRepo.Create(id, postStartDate, postEndDate, allocated)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"The resource could not be created.. Please try again later.")
 		return
 	}
 
-	// TODO: Use actual User ID here. Use 1 for now.
-	user, err := rt.UserRepo.Get(1)
+	user, err := rt.UserRepo.Get(id)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"The server was unable to get your user information. Please try again later.")

@@ -183,7 +183,7 @@ func (rt *Router) handleSettingsAccount(w http.ResponseWriter, r *http.Request) 
 	}{
 		User: user,
 	}
-	data.Currency = getCurrencyString(&user.Currency)
+	data.Currency = getCurrencyString(user.Currency)
 
 	// Getting the budget's end date and comparing it to the current date, to notify
 	// the user if their current budget period has expired. If so, they should be given
@@ -244,12 +244,12 @@ func (rt *Router) handleSettingsIncomeExpenses(w http.ResponseWriter, r *http.Re
 }
 
 func (rt *Router) handleSettingsSaveAccount(w http.ResponseWriter, r *http.Request) {
-	// TODO: Check for user authentication. Use ID 1 for now.
-	id := uint(1)
+	id, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
+		displayLoginRequired(w, r)
+		return
+	}
 
-	// TODO: Is this the correct way of closing requests? Using return here to
-	// exit out of the function since there is nothing more to do.
-	defer r.Body.Close()
 	if r.Method != POST {
 		displayErrorPage(w, r, http.StatusMethodNotAllowed,
 			"The resource you requested does not support the method used.")
@@ -277,24 +277,16 @@ func (rt *Router) handleSettingsSaveAccount(w http.ResponseWriter, r *http.Reque
 			"The server was unable to process your request. Please try again later.")
 		return
 	}
+	currency := getCurrency(uint(selectedCurrency))
 
-	// TODO: There is probably a better way to do this but I'm having brainfarts
-	// at the time of writing. Come back and revise this.
-	var currency database.Currency
-	switch selectedCurrency {
-	case 1:
-		currency = database.USD
-		break
-	case 2:
-		currency = database.EUR
-		break
-	case 3:
-		currency = database.SEK
-		break
+	u, err := rt.UserRepo.Get(id)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Your user information could not be retrieved. Please try again later.")
+		return
 	}
 
-	// TODO: Get user's active budget ID. Use ID 1 for now.
-	err = rt.UserRepo.UpdateSettings(id, 1, currency)
+	err = rt.UserRepo.UpdateSettings(id, u.ActiveBudgetID, currency)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Your settings could not be saved at this time. Please try again later.")

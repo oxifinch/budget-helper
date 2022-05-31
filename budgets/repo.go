@@ -34,14 +34,14 @@ func (b *BudgetRepo) GetByUserID(id uint) (*database.Budget, error) {
 	return &budget, err
 }
 
-func (b *BudgetRepo) Create(startDate string, endDate string,
+func (b *BudgetRepo) Create(id uint, startDate string, endDate string,
 	allocated float64) (uint, error) {
 
 	budget := database.Budget{
 		StartDate: startDate,
 		EndDate:   endDate,
 		Allocated: allocated,
-		// Currency:  "SEK", // TODO: Currency should be set on the User instead of budget
+		UserID:    id,
 	}
 
 	err := b.db.Create(&budget).Error

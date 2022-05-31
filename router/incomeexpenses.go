@@ -3,7 +3,6 @@ package router
 import (
 	"budget-helper/auth"
 	"budget-helper/database"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -32,7 +31,6 @@ func (rt *Router) handleSettingsDataIncomeExpenses(w http.ResponseWriter, r *htt
 
 	err = tmplPartSettingsDataIncomeExpenses.Execute(w, data)
 	if err != nil {
-		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 		return
@@ -73,7 +71,6 @@ func (rt *Router) handleIncomeExpensesCreate(w http.ResponseWriter, r *http.Requ
 
 	day, err := strconv.Atoi(postDay)
 	if err != nil {
-		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 		return
@@ -81,7 +78,6 @@ func (rt *Router) handleIncomeExpensesCreate(w http.ResponseWriter, r *http.Requ
 
 	amount, err := strconv.ParseFloat(postAmount, 64)
 	if err != nil {
-		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 		return
@@ -108,7 +104,6 @@ func (rt *Router) handleIncomeExpensesCreate(w http.ResponseWriter, r *http.Requ
 
 	err = tmplPartIncomeExpenseConfirmed.Execute(w, data)
 	if err != nil {
-		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 		return
@@ -131,7 +126,6 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 
 	err := r.ParseForm()
 	if err != nil {
-		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 		return
@@ -158,7 +152,6 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 	// Parse numerical values and create copies with the correct type.
 	ieID, err := strconv.Atoi(postID)
 	if err != nil {
-		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 		return
@@ -171,7 +164,6 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 
 	day, err := strconv.Atoi(postDay)
 	if err != nil {
-		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 		return
@@ -179,7 +171,6 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 
 	amount, err := strconv.ParseFloat(postAmount, 64)
 	if err != nil {
-		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 		return
@@ -187,7 +178,6 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 
 	err = rt.IncomeExpenseRepo.Update(uint(ieID), postLabel, uint(day), amount, enabled)
 	if err != nil {
-		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 		return
@@ -207,7 +197,6 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 
 	err = tmplPartIncomeExpenseConfirmed.Execute(w, data)
 	if err != nil {
-		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 		return
@@ -236,7 +225,6 @@ func (rt *Router) handleIncomeExpensesDelete(w http.ResponseWriter, r *http.Requ
 
 	ieID, err := strconv.Atoi(queryID)
 	if err != nil {
-		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 		return
@@ -270,7 +258,6 @@ func (rt *Router) handleIncomeExpensesDelete(w http.ResponseWriter, r *http.Requ
 
 	err = tmplPartIncomeExpenseConfirmed.Execute(w, data)
 	if err != nil {
-		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
 		return
