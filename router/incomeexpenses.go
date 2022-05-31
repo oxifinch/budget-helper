@@ -1,28 +1,25 @@
 package router
 
 import (
+	"budget-helper/auth"
 	"budget-helper/database"
+	"log"
 	"net/http"
 	"strconv"
 )
 
 func (rt *Router) handleSettingsDataIncomeExpenses(w http.ResponseWriter, r *http.Request) {
-	queryID := r.URL.Query().Get("id")
-	if queryID == "" {
-		displayErrorPage(w, r, http.StatusBadRequest,
-			"The request did not include a resource ID. Check the URL and try again.")
+	id, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
+		displayLoginRequired(w, r)
+		return
 	}
 
-	id, err := strconv.Atoi(queryID)
-	if err != nil {
-		displayErrorPage(w, r, http.StatusInternalServerError,
-			"Something went wrong. Please try again later.")
-	}
-
-	ies, err := rt.IncomeExpenseRepo.GetAllWithUserID(uint(id))
+	ies, err := rt.IncomeExpenseRepo.GetAllWithUserID(id)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusNotFound,
 			"The resource you requested could not be found. Check the request and try again.")
+		return
 	}
 
 	data := struct {
@@ -35,57 +32,66 @@ func (rt *Router) handleSettingsDataIncomeExpenses(w http.ResponseWriter, r *htt
 
 	err = tmplPartSettingsDataIncomeExpenses.Execute(w, data)
 	if err != nil {
+		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 
 }
 
 func (rt *Router) handleIncomeExpensesCreate(w http.ResponseWriter, r *http.Request) {
+	id, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
+		displayLoginRequired(w, r)
+		return
+	}
+
 	if r.Method != POST {
 		displayErrorPage(w, r, http.StatusMethodNotAllowed,
 			"The resource you requested does not support the method used.")
+		return
 	}
 
 	err := r.ParseForm()
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 
 	// Validate POST values.
-	postID := trimmedFormValue(r, "id")
 	postLabel := trimmedFormValue(r, "label")
 	postDay := trimmedFormValue(r, "day")
 	postAmount := trimmedFormValue(r, "amount")
 
-	if postID == "" || postLabel == "" || postDay == "" || postAmount == "" {
+	if postLabel == "" || postDay == "" || postAmount == "" {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"One or more fields was not submitted. Please try again.")
+		return
 	}
 
-	// Parse numerical values and create copies with the correct type.
-	id, err := strconv.Atoi(postID)
-	if err != nil {
-		displayErrorPage(w, r, http.StatusInternalServerError,
-			"Something went wrong. Please try again later.")
-	}
 	day, err := strconv.Atoi(postDay)
 	if err != nil {
+		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 
 	amount, err := strconv.ParseFloat(postAmount, 64)
 	if err != nil {
+		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 
-	_, err = rt.IncomeExpenseRepo.Create(uint(id), postLabel, uint(day), amount)
+	_, err = rt.IncomeExpenseRepo.Create(id, postLabel, uint(day), amount)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"The resource could not be created. Please try again later.")
+		return
 	}
 
 	data := struct {
@@ -102,24 +108,33 @@ func (rt *Router) handleIncomeExpensesCreate(w http.ResponseWriter, r *http.Requ
 
 	err = tmplPartIncomeExpenseConfirmed.Execute(w, data)
 	if err != nil {
+		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 
 }
 
 func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Request) {
+	id, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
+		displayLoginRequired(w, r)
+		return
+	}
+
 	if r.Method != POST {
 		displayErrorPage(w, r, http.StatusMethodNotAllowed,
 			"The resource you requested does not support the method used.")
+		return
 	}
-
-	// TODO: Make sure the user is logged in and get their ID.
 
 	err := r.ParseForm()
 	if err != nil {
+		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 
 	// Validate POST values.
@@ -132,6 +147,7 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 	if postID == "" || postLabel == "" || postDay == "" || postAmount == "" {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"One or more fields was not submitted. Please try again.")
+		return
 	}
 
 	enabled := true
@@ -140,42 +156,50 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 	}
 
 	// Parse numerical values and create copies with the correct type.
-	id, err := strconv.Atoi(postID)
+	ieID, err := strconv.Atoi(postID)
 	if err != nil {
+		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
-	if id < 1 {
+	if ieID < 1 {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"The resource ID submitted with the request is invalid. Double-check the request and try again.")
+		return
 	}
 
 	day, err := strconv.Atoi(postDay)
 	if err != nil {
+		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 
 	amount, err := strconv.ParseFloat(postAmount, 64)
 	if err != nil {
+		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 
-	err = rt.IncomeExpenseRepo.Update(uint(id), postLabel, uint(day), amount, enabled)
+	err = rt.IncomeExpenseRepo.Update(uint(ieID), postLabel, uint(day), amount, enabled)
 	if err != nil {
+		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 
-	// TODO: Load the actual UserID here instead of the default 1.
 	data := struct {
 		ID     uint
 		Create bool
 		Update bool
 		Delete bool
 	}{
-		ID:     1,
+		ID:     id,
 		Create: false,
 		Update: true,
 		Delete: false,
@@ -183,40 +207,52 @@ func (rt *Router) handleIncomeExpensesUpdate(w http.ResponseWriter, r *http.Requ
 
 	err = tmplPartIncomeExpenseConfirmed.Execute(w, data)
 	if err != nil {
+		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 }
 
 func (rt *Router) handleIncomeExpensesDelete(w http.ResponseWriter, r *http.Request) {
+	id, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
+		displayLoginRequired(w, r)
+		return
+	}
+
 	if r.Method != DELETE {
 		displayErrorPage(w, r, http.StatusMethodNotAllowed,
 			"The resource you requested does not support the method used.")
+		return
 	}
-
-	// TODO: Make sure the user is logged in and get their ID.
 
 	queryID := r.URL.Query().Get("id")
 	if queryID == "" {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"No resource ID was submitted in the request. Check the URL and try again.")
+		return
 	}
 
-	id, err := strconv.Atoi(queryID)
+	ieID, err := strconv.Atoi(queryID)
 	if err != nil {
+		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 
 	if id < 1 {
 		displayErrorPage(w, r, http.StatusBadRequest,
 			"The resource ID submitted in the reqest is invalid. Check the URL and try again.")
+		return
 	}
 
-	err = rt.IncomeExpenseRepo.Delete(uint(id))
+	err = rt.IncomeExpenseRepo.Delete(uint(ieID))
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"The resource could not be deleted. Please try again later.")
+		return
 	}
 
 	// TODO: Load the actual UserID here instead of the default 1.
@@ -234,7 +270,9 @@ func (rt *Router) handleIncomeExpensesDelete(w http.ResponseWriter, r *http.Requ
 
 	err = tmplPartIncomeExpenseConfirmed.Execute(w, data)
 	if err != nil {
+		log.Printf("error: %v\n", err)
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 }
