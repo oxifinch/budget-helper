@@ -154,3 +154,56 @@ func getCurrency(n uint) database.Currency {
 
 	return currency
 }
+
+func getBudgetRemainingBalance(b *database.Budget) float64 {
+	var bcAllocated float64
+	var spent float64
+
+	for _, bc := range b.BudgetCategories {
+		bcAllocated += bc.Allocated
+
+		var spentInBC float64
+		for _, p := range bc.Payments {
+			spentInBC += p.Amount
+		}
+		spent += spentInBC
+	}
+
+	return bcAllocated - spent
+}
+
+func getBudgetRemainingBuffer(b *database.Budget) float64 {
+	var bufferSpent float64
+	var bcAllocated float64
+
+	for _, bc := range b.BudgetCategories {
+		bcAllocated += bc.Allocated
+
+		var spentInBC float64
+		for _, p := range bc.Payments {
+			spentInBC += p.Amount
+		}
+
+		if spentInBC > bc.Allocated {
+			bufferSpent += (bc.Allocated - spentInBC)
+		}
+	}
+
+	return (b.Allocated - bcAllocated) - bufferSpent
+}
+
+func getBudgetCategoriesTotalSpent(b *database.Budget) float64 {
+	var totalSpent float64
+
+	for _, bc := range b.BudgetCategories {
+		for _, p := range bc.Payments {
+			totalSpent += p.Amount
+		}
+	}
+
+	return totalSpent
+}
+
+func getBudgetCategoriesPercentageSpent(b *database.Budget) int {
+	return int((getBudgetCategoriesTotalSpent(b) / b.Allocated) * 100)
+}
