@@ -172,6 +172,7 @@ func (rt *Router) handleSettingsAccount(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"The server was unable to get your user information. Please try again later.")
+		return
 	}
 
 	data := struct {
@@ -205,6 +206,7 @@ func (rt *Router) handleSettingsAccount(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"The server was unable to process your request. Please try again later.")
+		return
 	}
 	data.Budget = b
 
@@ -213,6 +215,7 @@ func (rt *Router) handleSettingsAccount(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"The server was unable to process your request. Please try again later.")
+		return
 	}
 	data.BudgetExpired = curDate.After(endDate)
 
@@ -309,11 +312,13 @@ func (rt *Router) handleSettingsSaveAccount(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Your settings could not be saved at this time. Please try again later.")
+		return
 	}
 
 	err = tmplPartAccountConfirmed.Execute(w, nil)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
+		return
 	}
 }

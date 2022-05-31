@@ -114,12 +114,14 @@ func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"The server was unable to get your user information. Please try again later.")
+		return
 	}
 
 	err = rt.UserRepo.UpdateSettings(user.ID, budgetID, user.Currency)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Your user settings could not be saved at this time. Please try again later.")
+		return
 	}
 
 	// Loop through categories and create new BudgetCategories
