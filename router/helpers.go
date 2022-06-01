@@ -39,11 +39,11 @@ const (
 )
 
 func addTemplate(path string) *template.Template {
-	return template.Must(template.ParseFiles(fmt.Sprintf("./templates/%v", path), "./templates/base.html"))
+	return template.Must(template.ParseFiles(fmt.Sprintf("../templates/%v", path), "../templates/base.html"))
 }
 
 func addPartial(path string) *template.Template {
-	return template.Must(template.ParseFiles(fmt.Sprintf("./templates/%v", path)))
+	return template.Must(template.ParseFiles(fmt.Sprintf("../templates/%v", path)))
 }
 
 func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, detailedMessage string) {
@@ -155,7 +155,7 @@ func getCurrency(n uint) database.Currency {
 	return currency
 }
 
-func budgetCategoriesAllocated(b *database.Budget) float64 {
+func BudgetCategoriesAllocated(b *database.Budget) float64 {
 	var bcAllocated float64
 
 	for _, bc := range b.BudgetCategories {
@@ -165,7 +165,7 @@ func budgetCategoriesAllocated(b *database.Budget) float64 {
 	return bcAllocated
 }
 
-func budgetCategoriesSpent(b *database.Budget) float64 {
+func BudgetCategoriesSpent(b *database.Budget) float64 {
 	var bcSpent float64
 
 	for _, bc := range b.BudgetCategories {
@@ -179,11 +179,11 @@ func budgetCategoriesSpent(b *database.Budget) float64 {
 	return bcSpent
 }
 
-func budgetBufferAllocated(b *database.Budget) float64 {
-	return b.Allocated - budgetCategoriesAllocated(b)
+func BudgetBufferAllocated(b *database.Budget) float64 {
+	return b.Allocated - BudgetCategoriesAllocated(b)
 }
 
-func budgetBufferSpent(b *database.Budget) float64 {
+func BudgetBufferSpent(b *database.Budget) float64 {
 	var bufSpent float64
 
 	for _, bc := range b.BudgetCategories {
@@ -201,11 +201,19 @@ func budgetBufferSpent(b *database.Budget) float64 {
 	return bufSpent
 }
 
-func budgetPercentageSpent(b *database.Budget) int {
-	return int((budgetCategoriesSpent(b) / budgetCategoriesAllocated(b)) * 100)
+/*
+	The primary measurement for how much of a user's budget has been spent
+	is calculated from the total allocated into INDIVIDUAL CATEGORIES, and
+	the payments in each of those categories. The total allocated to the
+	entire budget, which is divided between what is added to categories and
+	whatever remains(the buffer). This is because the buffer is only meant
+	as a backup, not as just another category to spend in.
+*/
+func BudgetPercentageSpent(b *database.Budget) int {
+	return int((BudgetCategoriesSpent(b) / BudgetCategoriesAllocated(b)) * 100)
 }
 
-func budgetCategoryPercentageSpent(bc *database.BudgetCategory) int {
+func BudgetCategoryPercentageSpent(bc *database.BudgetCategory) int {
 	var spentInBC float64
 
 	for _, p := range bc.Payments {
@@ -213,4 +221,28 @@ func budgetCategoryPercentageSpent(bc *database.BudgetCategory) int {
 	}
 
 	return int((spentInBC / bc.Allocated) * 100)
+}
+
+/*
+	How much has been spent of the budget's total allocated amount, which
+	is what the user enters when they create their new budget, BEFORE
+	allocating any money into individual categories. Since this includes
+	the buffer, it's not very useful to the user as a means to get an
+	accurate overview of their budget. However, it could be useful in other
+	situations, so I'm including it here in case it's needed.
+*/
+func BudgetTotalPercentageSpent(b *database.Budget) int {
+	var totalSpent float64
+
+	for _, bc := range b.BudgetCategories {
+		var spentInBC float64
+
+		for _, p := range bc.Payments {
+			spentInBC += p.Amount
+		}
+
+		totalSpent += spentInBC
+	}
+
+	return int((totalSpent / b.Allocated) * 100)
 }

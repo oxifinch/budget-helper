@@ -45,17 +45,17 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	}
 	data.Budget = b
 
-	bcAllocated := budgetCategoriesAllocated(b)
-	bcSpent := budgetCategoriesSpent(b)
+	bcAllocated := BudgetCategoriesAllocated(b)
+	bcSpent := BudgetCategoriesSpent(b)
 
-	bufAllocated := budgetBufferAllocated(b)
-	bufSpent := budgetBufferSpent(b)
+	bufAllocated := BudgetBufferAllocated(b)
+	bufSpent := BudgetBufferSpent(b)
 
 	data.BalanceRemaining = fmt.Sprintf("%.2f", bcAllocated-bcSpent)
 	data.BufferRemaining = fmt.Sprintf("%.2f", bufAllocated-bufSpent)
 
 	if bcSpent > 0 {
-		data.PercentageSpent = budgetPercentageSpent(b)
+		data.PercentageSpent = BudgetPercentageSpent(b)
 	}
 
 	err = tmplDashboard.ExecuteTemplate(w, "base", data)
