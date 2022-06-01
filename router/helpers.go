@@ -166,7 +166,7 @@ func getCurrency(n uint) database.Currency {
 	return currency
 }
 
-func BudgetCategoriesAllocated(b *database.Budget) float64 {
+func budgetCategoriesAllocated(b *database.Budget) float64 {
 	var bcAllocated float64
 
 	for _, bc := range b.BudgetCategories {
@@ -176,7 +176,7 @@ func BudgetCategoriesAllocated(b *database.Budget) float64 {
 	return bcAllocated
 }
 
-func BudgetCategoriesSpent(b *database.Budget) float64 {
+func budgetCategoriesSpent(b *database.Budget) float64 {
 	var bcSpent float64
 
 	for _, bc := range b.BudgetCategories {
@@ -190,11 +190,11 @@ func BudgetCategoriesSpent(b *database.Budget) float64 {
 	return bcSpent
 }
 
-func BudgetBufferAllocated(b *database.Budget) float64 {
-	return b.Allocated - BudgetCategoriesAllocated(b)
+func budgetBufferAllocated(b *database.Budget) float64 {
+	return b.Allocated - budgetCategoriesAllocated(b)
 }
 
-func BudgetBufferSpent(b *database.Budget) float64 {
+func budgetBufferSpent(b *database.Budget) float64 {
 	var bufSpent float64
 
 	for _, bc := range b.BudgetCategories {
@@ -220,11 +220,11 @@ func BudgetBufferSpent(b *database.Budget) float64 {
 	whatever remains(the buffer). This is because the buffer is only meant
 	as a backup, not as just another category to spend in.
 */
-func BudgetPercentageSpent(b *database.Budget) int {
-	return int((BudgetCategoriesSpent(b) / BudgetCategoriesAllocated(b)) * 100)
+func budgetPercentageSpent(b *database.Budget) int {
+	return int((budgetCategoriesSpent(b) / budgetCategoriesAllocated(b)) * 100)
 }
 
-func BudgetCategoryPercentageSpent(bc *database.BudgetCategory) int {
+func budgetCategoryPercentageSpent(bc *database.BudgetCategory) int {
 	var spentInBC float64
 
 	for _, p := range bc.Payments {
@@ -242,7 +242,7 @@ func BudgetCategoryPercentageSpent(bc *database.BudgetCategory) int {
 	accurate overview of their budget. However, it could be useful in other
 	situations, so I'm including it here in case it's needed.
 */
-func BudgetTotalPercentageSpent(b *database.Budget) int {
+func budgetTotalPercentageSpent(b *database.Budget) int {
 	var totalSpent float64
 
 	for _, bc := range b.BudgetCategories {

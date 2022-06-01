@@ -61,42 +61,42 @@ func TestBudgetCategoriesAllocated(t *testing.T) {
 		totalSpentPercent: 65,
 	}
 
-	calcBCAllocated := BudgetCategoriesAllocated(&budget)
+	calcBCAllocated := budgetCategoriesAllocated(&budget)
 	if calcBCAllocated != tables.bcAllocated {
 		t.Errorf("calcBCAllocated was incorrect, got: %v, want: %v.\n", calcBCAllocated, tables.bcAllocated)
 	}
 
-	calcBCSpent := BudgetCategoriesSpent(&budget)
+	calcBCSpent := budgetCategoriesSpent(&budget)
 	if calcBCSpent != tables.bcSpent {
 		t.Errorf("calcBCSpent was incorrect, got: %v, want: %v.\n", calcBCSpent, tables.bcSpent)
 	}
 
-	calcBufAllocated := BudgetBufferAllocated(&budget)
+	calcBufAllocated := budgetBufferAllocated(&budget)
 	if calcBufAllocated != tables.bufAllocated {
 		t.Errorf("calcBufAllocated was incorrect, got: %v, want: %v.\n", calcBufAllocated, tables.bufAllocated)
 	}
 
-	calcBufSpent := BudgetBufferSpent(&budget)
+	calcBufSpent := budgetBufferSpent(&budget)
 	if calcBufSpent != tables.bufSpent {
 		t.Errorf("calcBufSpent was incorrect, got: %v, want: %v.\n", calcBufSpent, tables.bufSpent)
 	}
 
-	calcSpentPercent := BudgetPercentageSpent(&budget)
+	calcSpentPercent := budgetPercentageSpent(&budget)
 	if calcSpentPercent != tables.spentPercent {
 		t.Errorf("calcSpentPercent was incorrect, got: %v, want: %v.\n", calcSpentPercent, tables.spentPercent)
 	}
 
-	calcBC1SpentPercent := BudgetCategoryPercentageSpent(&bc1)
+	calcBC1SpentPercent := budgetCategoryPercentageSpent(&bc1)
 	if calcBC1SpentPercent != tables.bc1SpentPercent {
 		t.Errorf("calcBC1SpentPercent was incorrect, got: %v, want: %v.\n", calcBC1SpentPercent, tables.bc1SpentPercent)
 	}
 
-	calcBC2SpentPercent := BudgetCategoryPercentageSpent(&bc2)
+	calcBC2SpentPercent := budgetCategoryPercentageSpent(&bc2)
 	if calcBC2SpentPercent != tables.bc2SpentPercent {
 		t.Errorf("calcBC2SpentPercent was incorrect, got: %v, want: %v.\n", calcBC2SpentPercent, tables.bc2SpentPercent)
 	}
 
-	calcTotalSpentPercent := BudgetTotalPercentageSpent(&budget)
+	calcTotalSpentPercent := budgetTotalPercentageSpent(&budget)
 	if calcTotalSpentPercent != tables.totalSpentPercent {
 		t.Errorf("calcTotalSpentPercent was incorrect, got: %v, want: %v.\n", calcTotalSpentPercent, tables.totalSpentPercent)
 	}
