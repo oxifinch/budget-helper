@@ -38,12 +38,13 @@ const (
 	DELETE   = "DELETE"
 )
 
+// These paths break when running tests. Adding ../ instead of ./ makes the tests work, but not the app itself.
 func addTemplate(path string) *template.Template {
-	return template.Must(template.ParseFiles(fmt.Sprintf("../templates/%v", path), "../templates/base.html"))
+	return template.Must(template.ParseFiles(fmt.Sprintf("./templates/%v", path), "./templates/base.html"))
 }
 
 func addPartial(path string) *template.Template {
-	return template.Must(template.ParseFiles(fmt.Sprintf("../templates/%v", path)))
+	return template.Must(template.ParseFiles(fmt.Sprintf("./templates/%v", path)))
 }
 
 func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, detailedMessage string) {
