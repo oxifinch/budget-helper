@@ -35,21 +35,23 @@ func TestBudgetCategoriesAllocated(t *testing.T) {
 	}
 
 	tables := struct {
-		bcAllocated     float64
-		bcSpent         float64
-		bufAllocated    float64
-		bufSpent        float64
-		spentPercent    int
-		bc1SpentPercent int
-		bc2SpentPercent int
+		bcAllocated       float64
+		bcSpent           float64
+		bufAllocated      float64
+		bufSpent          float64
+		spentPercent      int
+		bc1SpentPercent   int
+		bc2SpentPercent   int
+		totalSpentPercent int
 	}{
-		bcAllocated:     700.00,
-		bcSpent:         650.00,
-		bufAllocated:    300.00,
-		bufSpent:        100.00,
-		spentPercent:    92,
-		bc1SpentPercent: 120,
-		bc2SpentPercent: 25,
+		bcAllocated:       700.00,
+		bcSpent:           650.00,
+		bufAllocated:      300.00,
+		bufSpent:          100.00,
+		spentPercent:      92,
+		bc1SpentPercent:   120,
+		bc2SpentPercent:   25,
+		totalSpentPercent: 65,
 	}
 
 	calcBCAllocated := BudgetCategoriesAllocated(&budget)
@@ -87,5 +89,8 @@ func TestBudgetCategoriesAllocated(t *testing.T) {
 		t.Errorf("calcBC2SpentPercent was incorrect, got: %v, want: %v.\n", calcBC2SpentPercent, tables.bc2SpentPercent)
 	}
 
-	// TODO: Test BudgetTotalPercentageSpent
+	calcTotalSpentPercent := BudgetTotalPercentageSpent(&budget)
+	if calcTotalSpentPercent != tables.totalSpentPercent {
+		t.Errorf("calcTotalSpentPercent was incorrect, got: %v, want: %v.\n", calcTotalSpentPercent, tables.totalSpentPercent)
+	}
 }
