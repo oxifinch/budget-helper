@@ -5,7 +5,16 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"path/filepath"
+	"runtime"
 	"strings"
+)
+
+// Getting absolute path from project root to make template.Must
+// compatible with the tests in this package.
+var (
+	_, b, _, _ = runtime.Caller(0)
+	basepath   = filepath.Dir(b)
 )
 
 // -- TEMPLATES: FULL PAGES --
@@ -38,13 +47,14 @@ const (
 	DELETE   = "DELETE"
 )
 
-// These paths break when running tests. Adding ../ instead of ./ makes the tests work, but not the app itself.
+// Traversing backwards from the basepath of the router/ package here, which makes it compatible with both
+// running the app itself, and running tests within this package.
 func addTemplate(path string) *template.Template {
-	return template.Must(template.ParseFiles(fmt.Sprintf("./templates/%v", path), "./templates/base.html"))
+	return template.Must(template.ParseFiles(fmt.Sprintf("%v/../templates/%v", basepath, path), fmt.Sprintf("%v/../templates/base.html", basepath)))
 }
 
 func addPartial(path string) *template.Template {
-	return template.Must(template.ParseFiles(fmt.Sprintf("./templates/%v", path)))
+	return template.Must(template.ParseFiles(fmt.Sprintf("%v/../templates/%v", basepath, path)))
 }
 
 func displayErrorPage(w http.ResponseWriter, r *http.Request, statusCode int, detailedMessage string) {

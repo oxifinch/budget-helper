@@ -2,10 +2,17 @@ package router
 
 import (
 	"budget-helper/database"
+	"fmt"
+	"path/filepath"
+	"runtime"
 	"testing"
 )
 
 func TestBudgetCategoriesAllocated(t *testing.T) {
+	_, b, _, _ := runtime.Caller(0)
+	basepath := filepath.Dir(b)
+	fmt.Printf("Base: %v\n", basepath)
+
 	bc1Payments := []database.Payment{
 		{Amount: 200.00},
 		{Amount: 100.00},
