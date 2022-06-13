@@ -1,6 +1,6 @@
 <p>
 {{if .Success }}
-    <!-- TODO: Set this ID correctly -->
+    <!-- TODO: Use the authenticated user's ID instead of a query string -->
     <ins hx-get="/payments/budget?id=1" hx-trigger="load" hx-target="#list-payments">Payment added!</ins>
 {{else}}
     <p><b>ERROR: </b>{{ .ErrorMessage }}</p>

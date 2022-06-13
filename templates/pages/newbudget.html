@@ -1,4 +1,38 @@
 {{define "body"}}
+    <!-- MODAL FOR SHOWING WHERE ALLOCATED MONEY COMES FROM (IncomeExpenses) -->
+    <dialog id="modal-incomeexpenses">
+        <article>
+            <header>
+                <h2>Income and expenses</h2>
+                <p>
+                    <!-- TODO: Get user's ID instead of hardcoding it in a query string -->
+                    The default allocated amount is taken from your income and expenses,
+                    but you can adjust it as you like. <a href="/settings/incomeexpenses?id=1">Go to settings.</a>
+                </p>
+            </header>
+
+            <div>
+                <ul>
+                {{ range .IncomeExpenses }}
+                    {{ if .Enabled }}
+                    <li><strong>{{ .Label }}:</strong> {{ .Amount }}</li>
+                    {{ end }}
+                {{ end }}
+                </ul>
+            </div>
+
+            <footer>
+                <a href="#cancel" 
+                    role="button"
+                    class="secondary"
+                    data-target="modal-incomeexpenses"
+                    onClick="toggleModal(event)">
+                    Close
+                </a>
+            </footer>
+        </article>
+    </dialog>
+
     <div class="container">
         <h3>Create a new budget</h3>
         <form action="/newBudgetSave" method="POST">
@@ -19,6 +53,7 @@
             <!-- TOTAL MONEY ALLOCATED -->
             <label for="allocated">
                 Total money allocated
+                <a href="" data-target="modal-incomeexpenses" onclick="toggleModal(event)">Sources</a>
                 <input type="number" name="allocated" step=".01" value="{{ .DefaultAllocated }}">
             </label>
 

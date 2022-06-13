@@ -34,14 +34,14 @@ func (b *BudgetRepo) GetByUserID(id uint) (*database.Budget, error) {
 	return &budget, err
 }
 
-func (b *BudgetRepo) Create(startDate string, endDate string,
+func (b *BudgetRepo) Create(id uint, startDate string, endDate string,
 	allocated float64) (uint, error) {
 
 	budget := database.Budget{
 		StartDate: startDate,
 		EndDate:   endDate,
 		Allocated: allocated,
-		// Currency:  "SEK", // TODO: Currency should be set on the User instead of budget
+		UserID:    id,
 	}
 
 	err := b.db.Create(&budget).Error
@@ -61,4 +61,14 @@ func (b *BudgetRepo) CreateBudgetCategory(budgetID uint, categoryID uint,
 	err := b.db.Create(&bc).Error
 
 	return bc.ID, err
+}
+
+// Gets only basic information about a specific budget, for when
+// you don't want to load the whole thing with preloads.
+func (b *BudgetRepo) GetInfo(id uint) (*database.Budget, error) {
+	var budget database.Budget
+
+	err := b.db.First(&budget, id).Error
+
+	return &budget, err
 }

@@ -4,6 +4,9 @@ import (
 	"budget-helper/auth"
 	"budget-helper/database"
 	"net/http"
+	"strconv"
+	"strings"
+	"time"
 )
 
 // -- USERS & AUTHENTICATION --
@@ -142,6 +145,7 @@ func (rt *Router) handleSettings(w http.ResponseWriter, r *http.Request) {
 		AppTitle  string
 		PageTitle string
 		User      *database.User
+		Currency  string
 	}{
 		AppTitle:  AppTitle,
 		PageTitle: "Settings",
@@ -158,13 +162,50 @@ func (rt *Router) handleSettings(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) handleSettingsAccount(w http.ResponseWriter, r *http.Request) {
-	_, found := auth.LoggedInUser(rt.Store, r)
+	id, found := auth.LoggedInUser(rt.Store, r)
 	if !found {
 		displayLoginRequired(w, r)
 		return
 	}
 
-	err := tmplPartSettingsAccount.Execute(w, nil)
+	user, err := rt.UserRepo.Get(id)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"The server was unable to get your user information. Please try again later.")
+		return
+	}
+
+	data := struct {
+		User          *database.User
+		Currency      string
+		Budget        *database.Budget
+		BudgetExpired bool
+	}{
+		User: user,
+	}
+	data.Currency = getCurrencyString(user.Currency)
+
+	// Getting the budget's end date and comparing it to the current date, to notify
+	// the user if their current budget period has expired. If so, they should be given
+	// the option to create a new one.
+	b, err := rt.BudgetRepo.GetInfo(user.ActiveBudgetID)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"The server was unable to process your request. Please try again later.")
+		return
+	}
+	data.Budget = b
+
+	curDate := time.Now()
+	endDate, err := time.Parse("2006-01-02", b.EndDate)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"The server was unable to process your request. Please try again later.")
+		return
+	}
+	data.BudgetExpired = curDate.After(endDate)
+
+	err = tmplPartSettingsAccount.Execute(w, data)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")
@@ -195,6 +236,64 @@ func (rt *Router) handleSettingsIncomeExpenses(w http.ResponseWriter, r *http.Re
 	}
 
 	err = tmplPartSettingsIncomeExpenses.Execute(w, data)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Something went wrong. Please try again later.")
+		return
+	}
+}
+
+func (rt *Router) handleSettingsSaveAccount(w http.ResponseWriter, r *http.Request) {
+	id, found := auth.LoggedInUser(rt.Store, r)
+	if !found {
+		displayLoginRequired(w, r)
+		return
+	}
+
+	if r.Method != POST {
+		displayErrorPage(w, r, http.StatusMethodNotAllowed,
+			"The resource you requested does not support the method used.")
+		return
+	}
+
+	// Validate POST values
+	err := r.ParseForm()
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"The server was unable to process your request. Please try again later.")
+		return
+	}
+
+	postCurrency := strings.TrimSpace(r.PostFormValue("currency"))
+	if postCurrency == "" {
+		displayErrorPage(w, r, http.StatusBadRequest,
+			"One or more fields was not submitted in your request. Please check the request and try again.")
+		return
+	}
+
+	selectedCurrency, err := strconv.Atoi(postCurrency)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"The server was unable to process your request. Please try again later.")
+		return
+	}
+	currency := getCurrency(uint(selectedCurrency))
+
+	u, err := rt.UserRepo.Get(id)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Your user information could not be retrieved. Please try again later.")
+		return
+	}
+
+	err = rt.UserRepo.UpdateSettings(id, u.ActiveBudgetID, currency)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Your settings could not be saved at this time. Please try again later.")
+		return
+	}
+
+	err = tmplPartAccountConfirmed.Execute(w, nil)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"Something went wrong. Please try again later.")

@@ -36,11 +36,13 @@ func (rt *Router) handleNewBudget(w http.ResponseWriter, r *http.Request) {
 		AppTitle         string
 		PageTitle        string
 		Categories       []database.Category
+		IncomeExpenses   []database.IncomeExpense
 		DefaultAllocated float64
 	}{
-		AppTitle:   AppTitle,
-		PageTitle:  "New Budget",
-		Categories: categories,
+		AppTitle:       AppTitle,
+		PageTitle:      "New Budget",
+		Categories:     categories,
+		IncomeExpenses: ies,
 	}
 
 	for _, ie := range ies {
@@ -59,7 +61,7 @@ func (rt *Router) handleNewBudget(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
-	_, found := auth.LoggedInUser(rt.Store, r)
+	id, found := auth.LoggedInUser(rt.Store, r)
 	if !found {
 		displayLoginRequired(w, r)
 		return
@@ -100,10 +102,24 @@ func (rt *Router) handleNewBudgetSave(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: Should a HTTP status 201 be sent here?
-	budgetID, err := rt.BudgetRepo.Create(postStartDate, postEndDate, allocated)
+	budgetID, err := rt.BudgetRepo.Create(id, postStartDate, postEndDate, allocated)
 	if err != nil {
 		displayErrorPage(w, r, http.StatusInternalServerError,
 			"The resource could not be created.. Please try again later.")
+		return
+	}
+
+	user, err := rt.UserRepo.Get(id)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"The server was unable to get your user information. Please try again later.")
+		return
+	}
+
+	err = rt.UserRepo.UpdateSettings(user.ID, budgetID, user.Currency)
+	if err != nil {
+		displayErrorPage(w, r, http.StatusInternalServerError,
+			"Your user settings could not be saved at this time. Please try again later.")
 		return
 	}
 

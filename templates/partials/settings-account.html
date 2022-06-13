@@ -1,11 +1,25 @@
 <h3>Settings: Account</h3>
 <div class="settings-tab-account">
+
     <form action="/settingsSave/account" method="POST">
+        <label for="currency"><strong>Selected Currency: </strong>{{ .Currency }}</label>
         <select name="currency">
-            <!-- TODO: Load currencies in here instead of hardcoding. -->
+            <option value="" disabled selected>Select currency</option>
             <option value="1">USD</option>
             <option value="2">EUR</option>
             <option value="3">SEK</option>
         </select>
+
+        <button 
+            class="secondary"
+            hx-post="/settingsSave/account"
+            hx-target="#settings-container">
+            Save
+        </button>
     </form> 
+
+    <p><strong>Active Budget Period: </strong>{{ .Budget.StartDate }} - {{ .Budget.EndDate }}</p>
+    {{ if .BudgetExpired }}
+    <p><strong>EXPIRED. </strong><a href="/newBudget">Create new?</a></p>
+    {{ end }}
 </div>

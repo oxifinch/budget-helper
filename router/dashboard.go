@@ -45,21 +45,18 @@ func (rt *Router) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	}
 	data.Budget = b
 
-	var totalSpent float64
-	var totalAllocated float64
-	for _, bc := range b.BudgetCategories {
-		totalAllocated += bc.Allocated
+	bcAllocated := budgetCategoriesAllocated(b)
+	bcSpent := budgetCategoriesSpent(b)
 
-		for _, p := range bc.Payments {
-			totalSpent += p.Amount
-		}
+	bufAllocated := budgetBufferAllocated(b)
+	bufSpent := budgetBufferSpent(b)
+
+	data.BalanceRemaining = fmt.Sprintf("%.2f", bcAllocated-bcSpent)
+	data.BufferRemaining = fmt.Sprintf("%.2f", bufAllocated-bufSpent)
+
+	if bcSpent > 0 {
+		data.PercentageSpent = budgetPercentageSpent(b)
 	}
-	if totalSpent > 0 {
-		data.PercentageSpent = int((totalSpent / totalAllocated) * 100)
-	}
-	data.BalanceRemaining = fmt.Sprintf("%.2f", (totalAllocated - totalSpent))
-	// TODO: BufferRemaining should be calculated here.
-	// BufferRemaining = (Budget.Allocated - BudgetCategories.Allocated) - (Uncategorized payments + BudgetCategory deficits)
 
 	err = tmplDashboard.ExecuteTemplate(w, "base", data)
 	if err != nil {

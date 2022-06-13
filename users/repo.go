@@ -49,3 +49,19 @@ func (u *UserRepo) Create(username string, password string) (uint, error) {
 
 	return newUser.ID, err
 }
+
+func (u *UserRepo) UpdateSettings(id uint, activeBudgetID uint, currency database.Currency) error {
+	var user database.User
+
+	// Check if record exists before trying to update.
+	err := u.db.Where("id = ?", id).First(&user, id).Error
+	if err != nil {
+		// Return early if the record doesn't exist.
+		return err
+	}
+
+	user.ActiveBudgetID = activeBudgetID
+	user.Currency = currency
+
+	return u.db.Save(&user).Error
+}
